@@ -6,9 +6,9 @@ Price without the casino: spot, sats-per-dollar, market cap. No candles, no
 
 ## Spec
 - `js/panels/06-price.js`: subscribe to `prices`, `tipHeight`.
-- Hero ← USD spot (`HELM.fmt.usd`, no decimals ≥ $1,000).
+- Hero ← USD spot (`HULL.fmt.usd`, no decimals ≥ $1,000).
 - Rows: **sats per dollar** = round(1e8 / USD) ("845 sats"); **market cap** =
-  USD × circulating supply — supply from `HELM.supplyAt(height)` if task 08
+  USD × circulating supply — supply from `HULL.supplyAt(height)` if task 08
   already landed, else inline the exact era-sum helper here and task 08
   adopts it (whichever task runs second refactors to the shared one —
   note it in `_SHARED.md`).

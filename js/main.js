@@ -1,10 +1,10 @@
-/* Bitcoin Helm — boot: start every REST poll (intervals per _SHARED.md)
+/* Bitcoin Hull — boot: start every REST poll (intervals per _SHARED.md)
    and drive the header status chip from the "conn" store key.
    Panels wire up in tasks 03–08. */
 (function () {
   'use strict';
 
-  var HELM = window.HELM;
+  var HULL = window.HULL;
 
   /* name, path, store key, interval — the _SHARED.md endpoint table */
   var POLLS = [
@@ -18,7 +18,7 @@
     ['hashrate',      '/api/v1/mining/hashrate/3d',    'hashrate',      300000]
   ];
   for (var i = 0; i < POLLS.length; i++) {
-    HELM.api.poll(POLLS[i][0], POLLS[i][1], POLLS[i][2], POLLS[i][3]);
+    HULL.api.poll(POLLS[i][0], POLLS[i][1], POLLS[i][2], POLLS[i][3]);
   }
 
   /* status chip: ● POLLING (boot only) / LIVE / DEGRADED / DOWN */
@@ -35,6 +35,6 @@
     chip.className = 'chip ' + s.cls;
     label.textContent = s.text;
   }
-  HELM.store.on('conn', renderConn);
-  renderConn(HELM.store.get('conn'));
+  HULL.store.on('conn', renderConn);
+  renderConn(HULL.store.get('conn'));
 })();

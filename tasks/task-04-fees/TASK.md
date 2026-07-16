@@ -8,7 +8,7 @@ The fees panel answers "what do I pay, and is now a good time?" in one glance.
   and `mempool`.
 - Hero ← `fastestFee` sat/vB; rows ← `halfHourFee`, `hourFee`, `economyFee`,
   `minimumFee` (label it "floor").
-- **The verdict** (the Helm's own stat — plain English, icon + label + tint,
+- **The verdict** (the Hull's own stat — plain English, icon + label + tint,
   never color alone):
   - `CALM` (good): fastestFee ≤ 5 sat/vB
   - `NORMAL` (ink, no tint): ≤ 20

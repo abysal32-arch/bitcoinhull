@@ -5,7 +5,7 @@ Issuance and the halving computed EXACTLY from tip height — zero API calls,
 zero rounding lies.
 
 ## Spec
-- `js/panels/08-supply.js` + shared helper `HELM.supplyAt(height)`:
+- `js/panels/08-supply.js` + shared helper `HULL.supplyAt(height)`:
   exact era sum — subsidy starts 50 BTC, halves every 210,000 blocks
   (integer-floor sat math like consensus: `Math.floor(5_000_000_000 / 2**era)`
   sats per block, era = floor(height/210000) — do NOT use JS `>>` bitshift,

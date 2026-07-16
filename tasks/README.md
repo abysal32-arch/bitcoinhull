@@ -1,6 +1,6 @@
-# Bitcoin Helm — the 10 tasks
+# Bitcoinhull — the 10 tasks
 
-GOAL: a live, sleek Bitcoin dashboard ("the Helm") in the spirit of Clark
+GOAL: a live, sleek Bitcoin dashboard ("the Hull") in the spirit of Clark
 Moody's dashboard — more readable, cleaner, fewer useless stats, a few new
 ones. After task 10 closes, v1 is LIVE on GitHub Pages.
 
@@ -45,4 +45,4 @@ README + QA evidence committed; this table all ☑.
 - Lightning section, node-count/version stats, altcoin anything.
 - Historical charts beyond what a panel needs (no time-series explorer).
 - User accounts, settings persistence beyond localStorage, custom nodes.
-- Light mode (the Helm is dark; revisit post-v1).
+- Light mode (the Hull is dark; revisit post-v1).

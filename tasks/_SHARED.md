@@ -4,16 +4,16 @@ Read this + your one TASK.md. That's the whole boot.
 
 ## The bar
 
-The Helm is a **command point**: one dark screen you can read from across the
+The Hull is a **command point**: one dark screen you can read from across the
 room. Every number earns its place. If a stat needs a paragraph to matter, it
-doesn't ship. Clark Moody's dashboard is the ancestor; the Helm is fewer
+doesn't ship. Clark Moody's dashboard is the ancestor; the Hull is fewer
 numbers, bigger type, honest states.
 
 ## Hard stack rules
 
 - Vanilla HTML/CSS/JS. **Zero build step, zero dependencies, zero frameworks.**
 - Plain `<script>` files (NOT ES modules — they break over `file://`), all
-  state under the single `window.HELM` namespace, load order set in
+  state under the single `window.HULL` namespace, load order set in
   `index.html`.
 - Must work opened straight from disk (`file:///…/index.html`) AND on GitHub
   Pages. No API keys, no server of ours.
@@ -43,9 +43,9 @@ Supply/halving are NOT fetched — computed exactly from tip height
 ```
 index.html          the whole page; script load order at the bottom
 css/style.css       all styling; design tokens at the top in :root
-js/format.js        HELM.fmt.*  number/time formatters (task 02)
-js/store.js         HELM.store  state + pub/sub          (task 02)
-js/api.js           HELM.api    poll scheduler + backoff (task 02)
+js/format.js        HULL.fmt.*  number/time formatters (task 02)
+js/store.js         HULL.store  state + pub/sub          (task 02)
+js/api.js           HULL.api    poll scheduler + backoff (task 02)
 js/panels/NN-*.js   one file per panel, subscribes to store (tasks 03–08)
 js/live.js          WebSocket layer                      (task 09)
 js/main.js          boot: start polls, init panels      (task 02+)
@@ -72,12 +72,12 @@ palette validator; stat tiles/text don't need it.
 
 - Panel markup already exists in `index.html` (task 01) with `data-*` hooks —
   wiring a panel means filling values, not restructuring layout.
-- A panel renders from `HELM.store` state only; it never fetches.
+- A panel renders from `HULL.store` state only; it never fetches.
 - Three honest states per value: **loading** `—` (dim), **live** (normal),
   **stale** (last value kept, panel gets `.stale` = dimmed + "STALE n min"
   tag). NEVER show a fabricated or frozen-looking number without the tag.
 - No console errors/warnings in any state, including API-down.
-- Formatters from `HELM.fmt` only — no ad-hoc `toFixed` in panels.
+- Formatters from `HULL.fmt` only — no ad-hoc `toFixed` in panels.
 
 ## Data core (task 02) — facts panels rely on
 
@@ -89,14 +89,14 @@ palette validator; stat tiles/text don't need it.
   stale · degraded = some · down = all (or browser offline). Failed polls
   retry on exponential backoff: 5 s doubling, capped at 5 min; a 15 s abort
   kills hung fetches.
-- `HELM.api.BASE` is the single base URL, deliberately mutable at runtime;
-  `HELM.api.refresh()` refires every poll now. Down/recover rehearsal from
+- `HULL.api.BASE` is the single base URL, deliberately mutable at runtime;
+  `HULL.api.refresh()` refires every poll now. Down/recover rehearsal from
   the console: set BASE to `'https://mempool.space/garbage'` (same-origin
   404s — a made-up HOST wedges the preview pane's origin permissions),
   refresh(), watch DOWN; restore BASE, refresh(), watch LIVE.
-- `?debug=1` = one `[helm]` console line per poll attempt + conn
+- `?debug=1` = one `[hull]` console line per poll attempt + conn
   transitions; silent by default.
-- Every `HELM.fmt` formatter returns `—` for non-finite input, so panels
+- Every `HULL.fmt` formatter returns `—` for non-finite input, so panels
   pass missing values straight through to get the honest loading state.
   `fmt.ehs()` returns the EH/s number only (unit lives in markup);
   `dur`/`diffT` include their units.

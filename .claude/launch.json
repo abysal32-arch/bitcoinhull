@@ -2,11 +2,11 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "helm",
+      "name": "hull",
       "runtimeExecutable": "node",
       "runtimeArgs": [
         "-e",
-        "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,s)=>{let u=decodeURIComponent(q.url.split('?')[0]);if(u==='/')u='/index.html';const fp=p.join(process.cwd(),u);const t={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png','.md':'text/plain'}[p.extname(fp).toLowerCase()]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){s.writeHead(404);s.end('404');}else{s.writeHead(200,{'Content-Type':t,'Cache-Control':'no-store'});s.end(d);}});}).listen(8765,()=>console.log('helm dev server on http://localhost:8765'));"
+        "const h=require('http'),f=require('fs'),p=require('path');h.createServer((q,s)=>{let u=decodeURIComponent(q.url.split('?')[0]);if(u==='/')u='/index.html';const fp=p.join(process.cwd(),u);const t={'.html':'text/html; charset=utf-8','.css':'text/css','.js':'text/javascript','.svg':'image/svg+xml','.png':'image/png','.md':'text/plain'}[p.extname(fp).toLowerCase()]||'application/octet-stream';f.readFile(fp,(e,d)=>{if(e){s.writeHead(404);s.end('404');}else{s.writeHead(200,{'Content-Type':t,'Cache-Control':'no-store'});s.end(d);}});}).listen(8765,()=>console.log('hull dev server on http://localhost:8765'));"
       ],
       "port": 8765
     }

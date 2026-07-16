@@ -1,7 +1,7 @@
-# ⎈ Bitcoin Helm
+# ⎈ Bitcoinhull
 
 A live Bitcoin command point — the chain, the mempool, fees, price, mining,
-supply, and the halving, readable at a glance.
+supply, and the halving, readable at a glance. Future home: bitcoinhull.com.
 
 - **Stack:** vanilla HTML/CSS/JS, zero build step, zero dependencies.
 - **Data:** [mempool.space](https://mempool.space) public API (REST + WebSocket). One source, no keys.

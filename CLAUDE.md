@@ -1,15 +1,16 @@
-# CLAUDE.md — Bitcoin Helm
+# CLAUDE.md — Bitcoinhull
 
 Persistent instructions for Claude Code. These rules apply to every session in
 this repo.
 
 ## What this project is
 
-**Bitcoin Helm** — a live Bitcoin dashboard in the spirit of Clark Moody's
-dashboard, rebuilt as a "helm" (command point): sleeker, more readable, fewer
-useless stats, a few new ones. Static site, vanilla HTML/CSS/JS, zero build
-step, one data source (mempool.space). Read-only — no wallet, no keys, no
-funds, ever.
+**Bitcoinhull** — a live Bitcoin dashboard in the spirit of Clark Moody's
+dashboard, rebuilt as "the Hull" (a command point): sleeker, more readable,
+fewer useless stats, a few new ones. Static site, vanilla HTML/CSS/JS, zero
+build step, one data source (mempool.space). Read-only — no wallet, no keys,
+no funds, ever. Eventual home: **bitcoinhull.com** (Joe owns the domain;
+wired up in task 10).
 
 ## How to work (token-efficient boot)
 

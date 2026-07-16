@@ -5,16 +5,16 @@ The single data spine every panel plugs into. After this task the page knows
 whether it's live, but panels still show placeholders (tasks 03–08 wire them).
 
 ## Spec
-- `js/format.js` → `HELM.fmt`: `int(n)` (thousands separators), `btc(n)`,
+- `js/format.js` → `HULL.fmt`: `int(n)` (thousands separators), `btc(n)`,
   `usd(n)` (compact ≥1T → "$2.37T"), `satvb(n)`, `pct(n, signed)`,
   `ago(ts)` ("4 min ago"), `dur(secs)` ("8.8 d"), `ehs(hashrateHs)`,
   `diffT(d)` ("127.4 T"). Unit-test by console table in a `scratch/` page if
   needed — no test framework.
-- `js/store.js` → `HELM.store`: `get(key)`, `set(key, value)` (stamps
+- `js/store.js` → `HULL.store`: `get(key)`, `set(key, value)` (stamps
   `updatedAt`), `on(key, fn)` (pub/sub), `age(key)` seconds. Keys:
   `tipHeight, blocks, fees, mempool, mempoolBlocks, prices, difficulty,
   hashrate, conn`.
-- `js/api.js` → `HELM.api`: `poll(name, url, storeKey, intervalMs)` —
+- `js/api.js` → `HULL.api`: `poll(name, url, storeKey, intervalMs)` —
   staggered start, per-endpoint exponential backoff (max 5 min) on failure,
   browser `online`/`offline` aware. Sets `conn` to `live` (all fresh) /
   `degraded` (some stale >2× interval) / `down` (all stale). Base URL in ONE

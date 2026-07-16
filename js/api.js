@@ -1,4 +1,4 @@
-/* Bitcoin Helm — HELM.api: the only code that touches the network.
+/* Bitcoin Hull — HULL.api: the only code that touches the network.
    One poll per endpoint: staggered start, per-endpoint exponential
    backoff (5 s doubling, capped at 5 min), browser online/offline aware.
    Derives the page-wide connection state into store key "conn":
@@ -11,8 +11,8 @@
 (function () {
   'use strict';
 
-  var HELM = window.HELM = window.HELM || {};
-  var store = HELM.store;
+  var HULL = window.HULL = window.HULL || {};
+  var store = HULL.store;
 
   var DEBUG = /[?&]debug=1(&|$)/.test(location.search);
   var FETCH_TIMEOUT_MS = 15000;
@@ -23,11 +23,11 @@
 
   var polls = []; /* { name, path, storeKey, intervalMs, failures, hasSucceeded, timer, idx } */
 
-  function log(msg) { if (DEBUG) console.log('[helm] ' + msg); }
+  function log(msg) { if (DEBUG) console.log('[hull] ' + msg); }
 
   var api = {
     /* The ONE base URL. Deliberately a mutable property: point it at a
-       garbage host from the console (then HELM.api.refresh()) to rehearse
+       garbage host from the console (then HULL.api.refresh()) to rehearse
        the down/recover path. */
     BASE: 'https://mempool.space',
 
@@ -43,7 +43,7 @@
       for (var i = 0; i < polls.length; i++) schedule(polls[i], polls[i].idx * 100);
     }
   };
-  HELM.api = api;
+  HULL.api = api;
 
   /* Every schedule() bumps p.seq, invalidating older timer chains AND older
      in-flight attempts: a hung fetch that settles late (e.g. after an

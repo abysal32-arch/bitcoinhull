@@ -1,5 +1,5 @@
 /* ============================================================
-   Bitcoin Helm — design system (task 01, locked)
+   Bitcoin Hull — design system (task 01, locked)
    Dark-only. Tokens are the contract — panels use roles, not hex.
    ============================================================ */
 
@@ -54,7 +54,7 @@ body {
 
 /* ---------------- header ---------------- */
 
-.helm-header {
+.hull-header {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
@@ -293,11 +293,11 @@ body {
 }
 .loading { color: var(--ink-mut); }
 
-@keyframes helm-flash {
+@keyframes hull-flash {
   0%   { background: rgba(247, 147, 26, 0.22); }
   100% { background: transparent; }
 }
-.flash { animation: helm-flash 0.9s ease-out; }
+.flash { animation: hull-flash 0.9s ease-out; }
 
 @media (prefers-reduced-motion: reduce) {
   .flash { animation: none; }
@@ -305,7 +305,7 @@ body {
 
 /* ---------------- footer ---------------- */
 
-.helm-footer {
+.hull-footer {
   display: flex;
   justify-content: space-between;
   gap: 12px;

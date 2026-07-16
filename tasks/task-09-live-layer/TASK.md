@@ -1,7 +1,7 @@
 # Task 09 — Live layer: WebSocket, new-block moment, live title
 
 ## Goal
-Polling page → live instrument. Blocks land ON the Helm the moment they land
+Polling page → live instrument. Blocks land ON the Hull the moment they land
 on the network.
 
 ## Spec

@@ -1,11 +1,11 @@
-/* Bitcoin Helm — HELM.fmt: every number on the page goes through here.
+/* Bitcoin Hull — HULL.fmt: every number on the page goes through here.
    Formatters take the raw API value and return a display string.
    Non-finite input returns the loading dash, so panels can pipe a
    missing value straight through and get the honest loading state. */
 (function () {
   'use strict';
 
-  var HELM = window.HELM = window.HELM || {};
+  var HULL = window.HULL = window.HULL || {};
 
   var DASH = '—'; /* — */
   var intFmt = new Intl.NumberFormat('en-US');
@@ -18,7 +18,7 @@
     return s.indexOf('.') === -1 ? s : s.replace(/0+$/, '').replace(/\.$/, '');
   }
 
-  HELM.fmt = {
+  HULL.fmt = {
 
     /* 1234567.4 -> "1,234,567" */
     int: function (n) {

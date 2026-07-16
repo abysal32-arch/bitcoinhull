@@ -1,11 +1,11 @@
 # Task 01 — Scaffold + design system + full static layout
 
 ## Goal
-The finished LOOK of the Helm, with placeholder data. Every later task is
+The finished LOOK of the Hull, with placeholder data. Every later task is
 pure wiring because this task fixes all markup and styling.
 
 ## Spec
-- `index.html`: header (⎈ BITCOIN HELM wordmark · big block height · status
+- `index.html`: header (⎈ BITCOIN HULL wordmark · big block height · status
   chip "STATIC"), then the grid:
   - **CHAIN TIP** strip (full width): a dashed "NEXT" pending tile + last 6
     block tiles (height, ~median fee, tx count, size, age); strip header

@@ -5,8 +5,8 @@ Hashrate, difficulty, and the retarget — the security dial of the network.
 
 ## Spec
 - `js/panels/07-mining.js`: subscribe to `hashrate`, `difficulty`.
-- Hero ← `currentHashrate` via `HELM.fmt.ehs` ("912 EH/s").
-- Rows: difficulty via `HELM.fmt.diffT` ("127.4 T"); **est. adjustment** ←
+- Hero ← `currentHashrate` via `HULL.fmt.ehs` ("912 EH/s").
+- Rows: difficulty via `HULL.fmt.diffT` ("127.4 T"); **est. adjustment** ←
   `difficultyChange` signed % — tint text with delta colors (green when
   negative? NO: sign is neutral news; keep ink, show sign explicitly "+2.1%");
   **retarget** ← `remainingBlocks` + `dur(remainingTime)` ("1,263 blocks ·

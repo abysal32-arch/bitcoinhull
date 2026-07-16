@@ -1,10 +1,10 @@
-/* Bitcoin Helm — HELM.store: the one state atom. Panels read + subscribe
+/* Bitcoin Hull — HULL.store: the one state atom. Panels read + subscribe
    here and never fetch. set() stamps updatedAt so staleness is always
    computable; age() is seconds since the key was last written. */
 (function () {
   'use strict';
 
-  var HELM = window.HELM = window.HELM || {};
+  var HULL = window.HULL = window.HULL || {};
 
   var KEYS = ['tipHeight', 'blocks', 'fees', 'mempool', 'mempoolBlocks',
               'prices', 'difficulty', 'hashrate', 'conn'];
@@ -12,7 +12,7 @@
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */
 
-  HELM.store = {
+  HULL.store = {
     KEYS: KEYS,
 
     get: function (key) {
@@ -26,13 +26,13 @@
 
     set: function (key, value) {
       if (KEYS.indexOf(key) === -1) {
-        console.warn('[helm] store.set: unknown key "' + key + '" — add it to store.KEYS');
+        console.warn('[hull] store.set: unknown key "' + key + '" — add it to store.KEYS');
       }
       data[key] = { value: value, updatedAt: Date.now() };
       var fns = (subs[key] || []).slice(); /* snapshot: unsubscribe during dispatch can't skip anyone */
       for (var i = 0; i < fns.length; i++) {
         try { fns[i](value, key); }
-        catch (err) { console.error('[helm] subscriber for "' + key + '" threw:', err); }
+        catch (err) { console.error('[hull] subscriber for "' + key + '" threw:', err); }
       }
     },
 
