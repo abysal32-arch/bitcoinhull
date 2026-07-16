@@ -15,10 +15,15 @@ wired up in task 10).
 ## How to work (token-efficient boot)
 
 To execute a task: read ONLY `tasks/_SHARED.md` + the one
-`tasks/task-NN-…/TASK.md` you're on. Do the work, verify in the browser,
-commit (one commit per task), tick it off in `tasks/README.md`, tell Joe it's
-safe to `/clear`, stop. Do NOT re-read other task folders or project history
-unless the TASK.md says to.
+`tasks/task-NN-…/TASK.md` you're on, plus that folder's `NOTES.md` if present
+(facts the previous task verified live — trust them). Do the work, verify in
+the browser, commit (one commit per task), tick it off in `tasks/README.md`,
+tell Joe it's safe to `/clear`, stop. Do NOT re-read other task folders or
+project history unless the TASK.md says to.
+
+Joe's boot prompt is just "task NN begin" — everything else (model policy,
+verification bar, agent limits) lives in this file + `_SHARED.md`. Never ask
+him to restate it.
 
 ## Standing rules
 
@@ -31,5 +36,12 @@ unless the TASK.md says to.
   npm/webpack/react, the change is wrong.
 - Full browser verification (load page, check console, screenshot) before
   every commit.
-- Model policy (Joe): writing code = Opus; review + editing = Fable;
-  research = Sonnet at HIGH effort.
+- Model policy (Joe, updated 2026-07-16): writing code = Opus on ultracode;
+  review + editing = Fable 5 on ultracode; research = Sonnet at **MAX**
+  effort. Research must seek ALTERNATIVE independent sources (prefer primary)
+  and NAME THE GAPS — say what could not be established and what rests on
+  inference; distinguish confirmed / inferred / unknown.
+- **Standing ultracode opt-in (Joe, 2026-07-16):** review/verification passes
+  run as multi-agent Workflow fan-outs without the keyword appearing in the
+  prompt — implementation itself stays direct in the main session (rule
+  above), and the 20-agent ceiling always holds.
