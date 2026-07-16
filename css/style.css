@@ -364,6 +364,11 @@ details.integrity { padding: 0; }
 }
 .foot-static { color: var(--warn); letter-spacing: 0.06em; font-weight: 600; }
 
+/* the Clark Moody credit — permanent, always the last line of the page */
+.foot-credit { flex-basis: 100%; color: var(--ink-2); }
+.foot-credit a { color: var(--accent); text-decoration: none; }
+.foot-credit a:hover, .foot-credit a:focus-visible { text-decoration: underline; }
+
 /* ---------------- responsive ---------------- */
 
 @media (max-width: 1100px) {

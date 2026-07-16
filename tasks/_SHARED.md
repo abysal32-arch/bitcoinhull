@@ -9,6 +9,13 @@ room. Every number earns its place. If a stat needs a paragraph to matter, it
 doesn't ship. Clark Moody's dashboard is the ancestor; the Hull is fewer
 numbers, bigger type, honest states.
 
+Clark Moody policy (Joe, 2026-07-16): his dashboard is the **metric reference
+catalog** — panels cherry-pick the stats he's proven useful, skip the rest,
+and add Hull originals (e.g. Integrity). It is NOT a data source (no public
+API; never scrape his infra) — bytes come only from mempool.space, above.
+The footer credit to Clark is **permanent**: task 10 polish must keep it as
+the last line of the page.
+
 ## Hard stack rules
 
 - Vanilla HTML/CSS/JS. **Zero build step, zero dependencies, zero frameworks.**
