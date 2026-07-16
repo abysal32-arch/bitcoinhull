@@ -79,6 +79,28 @@ palette validator; stat tiles/text don't need it.
 - No console errors/warnings in any state, including API-down.
 - Formatters from `HELM.fmt` only — no ad-hoc `toFixed` in panels.
 
+## Data core (task 02) — facts panels rely on
+
+- Store key `conn` ∈ `polling | live | degraded | down`; the header chip text
+  is the uppercase state. `polling` exists only between boot and the first
+  resolved request.
+- An endpoint is **stale** when it has no data, has ≥2 consecutive failed
+  fetches, or its data is older than 2× its poll interval. live = none
+  stale · degraded = some · down = all (or browser offline). Failed polls
+  retry on exponential backoff: 5 s doubling, capped at 5 min; a 15 s abort
+  kills hung fetches.
+- `HELM.api.BASE` is the single base URL, deliberately mutable at runtime;
+  `HELM.api.refresh()` refires every poll now. Down/recover rehearsal from
+  the console: set BASE to `'https://mempool.space/garbage'` (same-origin
+  404s — a made-up HOST wedges the preview pane's origin permissions),
+  refresh(), watch DOWN; restore BASE, refresh(), watch LIVE.
+- `?debug=1` = one `[helm]` console line per poll attempt + conn
+  transitions; silent by default.
+- Every `HELM.fmt` formatter returns `—` for non-finite input, so panels
+  pass missing values straight through to get the honest loading state.
+  `fmt.ehs()` returns the EH/s number only (unit lives in markup);
+  `dur`/`diffT` include their units.
+
 ## Every task, before its commit
 
 1. Open `index.html` in the browser preview (`file://` is fine), hard-reload.
