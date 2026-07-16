@@ -120,22 +120,15 @@
 
   <!-- MEMPOOL -->
   <section class="panel span-4" id="panel-mempool">
-    <div class="panel-head"><h2>Mempool</h2></div>
-    <div class="metric-hero"><span class="hero-num" data-mempool-vsize>8.4</span><span class="hero-unit">vMB</span></div>
-    <div class="mini-viz" data-mempool-viz aria-label="projected next blocks by size">
-      <span class="seg" style="flex:1.0"><span class="seg-label">3</span></span>
-      <span class="seg" style="flex:1.0"><span class="seg-label">2</span></span>
-      <span class="seg" style="flex:1.0"></span>
-      <span class="seg" style="flex:1.0"></span>
-      <span class="seg" style="flex:1.0"></span>
-      <span class="seg" style="flex:1.0"></span>
-      <span class="seg" style="flex:1.0"></span>
-      <span class="seg" style="flex:0.4"></span>
+    <div class="panel-head">
+      <h2>Mempool <span class="stale-tag" data-mempool-stale hidden>STALE</span></h2>
     </div>
+    <div class="metric-hero"><span class="hero-num" data-mempool-vsize>—</span><span class="hero-unit">vMB</span></div>
+    <div class="mini-viz" data-mempool-viz role="img" aria-label="projected next blocks by size"></div>
+    <div class="viz-caption">projected next blocks · median sat/vB</div>
     <div class="rows">
-      <div class="row"><span>Pending</span><span class="val"><span data-mempool-count>42,113</span> tx</span></div>
-      <div class="row"><span>Blocks to clear</span><span class="val" data-mempool-depth>~9 (≈ 1.5 h)</span></div>
-      <div class="row"><span>Incoming</span><span class="val"><span data-mempool-rate>4.2</span> tx/s</span></div>
+      <div class="row"><span>Pending</span><span class="val"><span data-mempool-count>—</span> tx</span></div>
+      <div class="row"><span>Blocks to clear</span><span class="val" data-mempool-depth>—</span></div>
     </div>
   </section>
 
@@ -199,7 +192,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">CHAIN TIP + FEES LIVE — remaining panels + integrity bar still placeholder, wired in tasks 05–08 + 11</span>
+  <span class="foot-static">CHAIN TIP + FEES + MEMPOOL LIVE — remaining panels + integrity bar still placeholder, wired in tasks 06–08 + 11</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
   <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
@@ -209,6 +202,7 @@
 <script src="js/api.js"></script>
 <script src="js/panels/03-chain.js"></script>
 <script src="js/panels/04-fees.js"></script>
+<script src="js/panels/05-mempool.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

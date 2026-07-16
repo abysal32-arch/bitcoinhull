@@ -297,13 +297,18 @@ details.integrity { padding: 0; }
 .block-next .bt-height { color: var(--accent); letter-spacing: 0.08em; }
 .block-next .bt-age { color: var(--accent); }
 
-/* ---------------- mempool mini-viz (segments get real data in task 05) ---------------- */
+/* ---------------- mempool mini-viz (fed by js/panels/05-mempool.js) ---------------- */
 
 .mini-viz {
   display: flex;
   gap: 2px; /* the 2px surface gap between adjacent fills */
   height: 14px;
   margin: 8px 0 2px;
+}
+.viz-caption {
+  font-size: 10px;
+  color: var(--ink-mut);
+  margin: 0 0 8px;
 }
 .mini-viz .seg {
   position: relative;
@@ -319,9 +324,11 @@ details.integrity { padding: 0; }
   justify-content: center;
   font-size: 10px;
   font-weight: 600;
-  color: var(--ink-2);
+  color: var(--ink); /* light ink for the ramp's dark steps */
   font-variant-numeric: tabular-nums;
+  white-space: nowrap; /* a label that doesn't fit is skipped by JS, never cropped */
 }
+.mini-viz .seg-label-dark { color: var(--bg); } /* dark ink for the ramp's light steps */
 
 /* ---------------- honest states (contract for tasks 02+) ---------------- */
 

@@ -128,7 +128,8 @@ Tooling quirks (learned task 03 — don't re-derive):
   --headless=new --screenshot="$env:TEMP\shot.png" --window-size=1280,1100
   --virtual-time-budget=8000 http://localhost:8765/index.html`
   (write to `$env:TEMP` — writing straight to the scratchpad gets
-  Access-denied — then copy).
+  Access-denied — then copy; the PNG lands a few seconds AFTER msedge
+  returns, so `Start-Sleep -Seconds 5` before copying).
 
 1. Open `index.html` in the browser preview, hard-reload.
 2. Console clean; values render; kill-network case shows stale states (panel
