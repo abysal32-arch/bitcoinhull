@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>⎈ Bitcoin Helm</title>
+<meta name="description" content="Bitcoin Helm — a live Bitcoin command point: chain, fees, mempool, price, mining, supply, halving.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%230b0e13'/%3E%3Ctext%20x='32'%20y='46'%20font-size='40'%20text-anchor='middle'%20fill='%23f7931a'%3E%E2%8E%88%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+<header class="helm-header">
+  <div class="wordmark"><span class="glyph">⎈</span> BITCOIN <b>HELM</b></div>
+  <div class="header-right">
+    <div class="tip"><span class="tip-label">BLOCK</span> <span class="tip-num" data-tip-height>954,321</span></div>
+    <div class="chip chip-static" data-conn-chip><span class="dot"></span><span data-conn-label>STATIC</span></div>
+  </div>
+</header>
+
+<main class="grid">
+
+  <!-- CHAIN TIP -->
+  <section class="panel span-12" id="panel-chain">
+    <div class="panel-head">
+      <h2>Chain tip</h2>
+      <div class="panel-side"><span class="val" data-since-block>4 min</span> since last block · 24h avg <span class="val" data-avg-interval>9.8 min</span></div>
+    </div>
+    <div class="block-strip" data-block-strip>
+      <div class="block-tile block-next">
+        <div class="bt-height">NEXT</div>
+        <div class="bt-line"><span class="val" data-next-fee>~3</span> sat/vB</div>
+        <div class="bt-line"><span class="val" data-next-txs>4,120</span> tx</div>
+        <div class="bt-line"><span class="val" data-next-vsize>1.9</span> MvB</div>
+        <div class="bt-age">pending</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,321</div>
+        <div class="bt-line"><span class="val">~2</span> sat/vB</div>
+        <div class="bt-line"><span class="val">3,412</span> tx</div>
+        <div class="bt-line"><span class="val">1.6</span> MB</div>
+        <div class="bt-age">4 min</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,320</div>
+        <div class="bt-line"><span class="val">~2</span> sat/vB</div>
+        <div class="bt-line"><span class="val">2,876</span> tx</div>
+        <div class="bt-line"><span class="val">1.4</span> MB</div>
+        <div class="bt-age">16 min</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,319</div>
+        <div class="bt-line"><span class="val">~3</span> sat/vB</div>
+        <div class="bt-line"><span class="val">4,102</span> tx</div>
+        <div class="bt-line"><span class="val">1.8</span> MB</div>
+        <div class="bt-age">22 min</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,318</div>
+        <div class="bt-line"><span class="val">~2</span> sat/vB</div>
+        <div class="bt-line"><span class="val">3,655</span> tx</div>
+        <div class="bt-line"><span class="val">1.7</span> MB</div>
+        <div class="bt-age">39 min</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,317</div>
+        <div class="bt-line"><span class="val">~1</span> sat/vB</div>
+        <div class="bt-line"><span class="val">2,981</span> tx</div>
+        <div class="bt-line"><span class="val">1.5</span> MB</div>
+        <div class="bt-age">47 min</div>
+      </div>
+      <div class="block-tile">
+        <div class="bt-height">954,316</div>
+        <div class="bt-line"><span class="val">~2</span> sat/vB</div>
+        <div class="bt-line"><span class="val">3,240</span> tx</div>
+        <div class="bt-line"><span class="val">1.6</span> MB</div>
+        <div class="bt-age">58 min</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEES -->
+  <section class="panel span-4" id="panel-fees">
+    <div class="panel-head">
+      <h2>Fees</h2>
+      <span class="pill pill-good" data-fee-verdict><span class="dot"></span>CALM</span>
+    </div>
+    <div class="metric-hero"><span class="hero-num" data-fee-fast>3</span><span class="hero-unit">sat/vB</span></div>
+    <div class="hero-sub" data-fee-sub>next block clears at ~3 sat/vB</div>
+    <div class="rows">
+      <div class="row"><span>30 min</span><span class="val"><span data-fee-half>2</span> sat/vB</span></div>
+      <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>2</span> sat/vB</span></div>
+      <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>1</span> sat/vB</span></div>
+      <div class="row"><span>Floor</span><span class="val"><span data-fee-min>1</span> sat/vB</span></div>
+    </div>
+  </section>
+
+  <!-- MEMPOOL -->
+  <section class="panel span-4" id="panel-mempool">
+    <div class="panel-head"><h2>Mempool</h2></div>
+    <div class="metric-hero"><span class="hero-num" data-mempool-vsize>8.4</span><span class="hero-unit">vMB</span></div>
+    <div class="mini-viz" data-mempool-viz aria-label="projected next blocks by size">
+      <span class="seg" style="flex:1.0"><span class="seg-label">3</span></span>
+      <span class="seg" style="flex:1.0"><span class="seg-label">2</span></span>
+      <span class="seg" style="flex:1.0"></span>
+      <span class="seg" style="flex:1.0"></span>
+      <span class="seg" style="flex:1.0"></span>
+      <span class="seg" style="flex:1.0"></span>
+      <span class="seg" style="flex:1.0"></span>
+      <span class="seg" style="flex:0.4"></span>
+    </div>
+    <div class="rows">
+      <div class="row"><span>Pending</span><span class="val"><span data-mempool-count>42,113</span> tx</span></div>
+      <div class="row"><span>Blocks to clear</span><span class="val" data-mempool-depth>~9 (≈ 1.5 h)</span></div>
+      <div class="row"><span>Incoming</span><span class="val"><span data-mempool-rate>4.2</span> tx/s</span></div>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="panel span-4" id="panel-price">
+    <div class="panel-head"><h2>Price</h2></div>
+    <div class="metric-hero"><span class="hero-unit hero-cur">$</span><span class="hero-num" data-price-usd>118,420</span></div>
+    <div class="hero-sub">mempool.space spot</div>
+    <div class="rows">
+      <div class="row"><span>Sats per dollar</span><span class="val"><span data-price-sats>845</span> sats</span></div>
+      <div class="row"><span>Market cap</span><span class="val" data-price-mcap>$2.37 T</span></div>
+    </div>
+  </section>
+
+  <!-- MINING -->
+  <section class="panel span-4" id="panel-mining">
+    <div class="panel-head"><h2>Mining</h2></div>
+    <div class="metric-hero"><span class="hero-num" data-mining-hashrate>912</span><span class="hero-unit">EH/s</span></div>
+    <div class="hero-sub">network hashrate</div>
+    <div class="rows">
+      <div class="row"><span>Difficulty</span><span class="val" data-mining-diff>127.4 T</span></div>
+      <div class="row"><span>Est. adjustment</span><span class="val" data-mining-adj>+2.1%</span></div>
+      <div class="row"><span>Retarget</span><span class="val" data-mining-retarget>1,263 blocks · ≈ 8.8 d</span></div>
+      <div class="row row-bar">
+        <span>Epoch</span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-mining-epochbar style="width:37.4%"></span></span><span class="val" data-mining-epochpct>37.4%</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- SUPPLY -->
+  <section class="panel span-4" id="panel-supply">
+    <div class="panel-head"><h2>Supply</h2></div>
+    <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
+    <div class="hero-sub">issued of 21,000,000</div>
+    <div class="rows">
+      <div class="row row-bar">
+        <span>Issued</span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-supply-bar style="width:95.45%"></span></span><span class="val" data-supply-pct>95.45%</span></span>
+      </div>
+      <div class="row"><span>Block subsidy</span><span class="val"><span data-supply-subsidy>3.125</span> BTC</span></div>
+      <div class="row"><span>Annual inflation</span><span class="val" data-supply-inflation>0.82%</span></div>
+    </div>
+  </section>
+
+  <!-- HALVING -->
+  <section class="panel span-4" id="panel-halving">
+    <div class="panel-head"><h2>Halving</h2></div>
+    <div class="metric-hero"><span class="hero-num" data-halving-blocks>95,679</span><span class="hero-unit">blocks</span></div>
+    <div class="hero-sub">until subsidy halves</div>
+    <div class="rows">
+      <div class="row"><span>Estimated</span><span class="val" data-halving-date>≈ May 2028</span></div>
+      <div class="row"><span>Next subsidy</span><span class="val"><span data-halving-next>1.5625</span> BTC</span></div>
+      <div class="row row-bar">
+        <span>Era 5</span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-halving-erabar style="width:54.4%"></span></span><span class="val" data-halving-erapct>54.4%</span></span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer class="helm-footer">
+  <span class="foot-static">STATIC PREVIEW — task 01 of 10 · live data arrives in task 02+</span>
+  <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
+</footer>
+
+</body>
+</html>

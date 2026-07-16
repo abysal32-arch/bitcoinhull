@@ -1,0 +1,331 @@
+/* ============================================================
+   Bitcoin Helm — design system (task 01, locked)
+   Dark-only. Tokens are the contract — panels use roles, not hex.
+   ============================================================ */
+
+:root {
+  color-scheme: dark;
+
+  /* surfaces */
+  --bg:        #0b0e13;
+  --surface:   #131822;
+  --surface-2: #1a2130;
+  --border:    rgba(255, 255, 255, 0.08);
+
+  /* ink */
+  --ink:     #f2f4f8;
+  --ink-2:   #aab3c2;
+  --ink-mut: #6b7484;
+
+  /* brand */
+  --accent: #f7931a;
+
+  /* status (validated set — never reuse as series colors) */
+  --good:     #0ca30c;
+  --warn:     #fab219;
+  --serious:  #ec835a;
+  --critical: #d03b3b;
+
+  --radius: 10px;
+  --radius-sm: 8px;
+  --font: system-ui, -apple-system, "Segoe UI", sans-serif;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font);
+  font-size: 14px;
+  line-height: 1.45;
+  min-height: 100vh;
+  padding: 18px clamp(14px, 3vw, 32px) 24px;
+  max-width: 1360px;
+  margin: 0 auto;
+}
+
+::selection { background: rgba(247, 147, 26, 0.35); }
+
+/* every live value: no width jitter, vertical alignment in rows */
+.val, .hero-num, .tip-num { font-variant-numeric: tabular-nums; }
+
+/* ---------------- header ---------------- */
+
+.helm-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 2px 2px 14px;
+}
+
+.wordmark {
+  font-size: 17px;
+  letter-spacing: 0.14em;
+  color: var(--ink-2);
+  font-weight: 400;
+  white-space: nowrap;
+}
+.wordmark b { color: var(--ink); font-weight: 700; }
+.wordmark .glyph { color: var(--accent); margin-right: 2px; }
+
+.header-right {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.tip { white-space: nowrap; }
+.tip-label {
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  color: var(--ink-mut);
+  margin-right: 6px;
+}
+.tip-num {
+  font-size: 26px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* ---------------- chips & pills (status: always dot + TEXT) ---------------- */
+
+.chip, .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  padding: 3px 10px;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+.chip .dot, .pill .dot {
+  width: 7px; height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  flex: none;
+}
+
+.chip-static  { color: var(--ink-mut);  background: rgba(255,255,255,0.06); }
+.chip-live, .pill-good     { color: var(--good);     background: rgba(12,163,12,0.12); }
+.chip-polling              { color: var(--ink-2);    background: rgba(255,255,255,0.07); }
+.chip-degraded, .pill-warn { color: var(--warn);     background: rgba(250,178,25,0.12); }
+.pill-serious              { color: var(--serious);  background: rgba(236,131,90,0.12); }
+.chip-down, .pill-critical { color: var(--critical); background: rgba(208,59,59,0.14); }
+.pill-plain                { color: var(--ink-2);    background: rgba(255,255,255,0.07); }
+
+/* ---------------- grid & panels ---------------- */
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 14px;
+}
+
+.span-12 { grid-column: span 12; }
+.span-4  { grid-column: span 4; }
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 15px 18px 16px;
+  min-width: 0;
+}
+
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.panel-head h2 {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-mut);
+}
+
+.panel-side { font-size: 12.5px; color: var(--ink-mut); white-space: nowrap; }
+.panel-side .val { color: var(--ink-2); font-weight: 600; }
+
+/* ---------------- hero metric ---------------- */
+
+.metric-hero {
+  display: flex;
+  align-items: baseline;
+  gap: 7px;
+  margin: 2px 0 1px;
+}
+.hero-num {
+  font-size: clamp(30px, 3vw, 38px);
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.hero-unit { font-size: 14px; color: var(--ink-mut); font-weight: 500; }
+.hero-cur  { align-self: flex-start; margin-top: 8px; }
+.hero-sub  { font-size: 12.5px; color: var(--ink-mut); margin-bottom: 8px; }
+
+/* ---------------- label/value rows ---------------- */
+
+.rows { margin-top: 6px; }
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 7px 0;
+  border-top: 1px solid var(--border);
+  font-size: 13px;
+  color: var(--ink-2);
+}
+.row .val { color: var(--ink); font-weight: 600; white-space: nowrap; }
+
+/* progress bars: bar is decoration, the % TEXT is the datum */
+.row-bar .bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 62%;
+}
+.bar {
+  flex: 1;
+  height: 6px;
+  background: var(--surface-2);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.bar-fill {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 3px;
+}
+
+/* ---------------- chain-tip block strip ---------------- */
+
+.block-strip {
+  display: flex;
+  gap: 10px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  scrollbar-width: thin;
+  scrollbar-color: var(--surface-2) transparent;
+}
+
+.block-tile {
+  flex: 1 0 118px;
+  min-width: 118px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+}
+
+.bt-height {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--ink);
+  font-variant-numeric: tabular-nums;
+  margin-bottom: 5px;
+}
+.bt-line { font-size: 11.5px; color: var(--ink-mut); line-height: 1.55; }
+.bt-line .val { color: var(--ink-2); font-weight: 600; }
+.bt-age {
+  margin-top: 5px;
+  font-size: 11px;
+  color: var(--ink-mut);
+}
+
+.block-next {
+  background: transparent;
+  border: 1px dashed rgba(247, 147, 26, 0.45);
+}
+.block-next .bt-height { color: var(--accent); letter-spacing: 0.08em; }
+.block-next .bt-age { color: var(--accent); }
+
+/* ---------------- mempool mini-viz (segments get real data in task 05) ---------------- */
+
+.mini-viz {
+  display: flex;
+  gap: 2px; /* the 2px surface gap between adjacent fills */
+  height: 14px;
+  margin: 8px 0 2px;
+}
+.mini-viz .seg {
+  position: relative;
+  background: var(--surface-2);
+  border-radius: 3px;
+  min-width: 4px;
+}
+.mini-viz .seg-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--ink-2);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------- honest states (contract for tasks 02+) ---------------- */
+
+.panel.stale { opacity: 0.55; }
+.stale-tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  color: var(--warn);
+}
+.loading { color: var(--ink-mut); }
+
+@keyframes helm-flash {
+  0%   { background: rgba(247, 147, 26, 0.22); }
+  100% { background: transparent; }
+}
+.flash { animation: helm-flash 0.9s ease-out; }
+
+@media (prefers-reduced-motion: reduce) {
+  .flash { animation: none; }
+}
+
+/* ---------------- footer ---------------- */
+
+.helm-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 2px 0;
+  font-size: 11.5px;
+  color: var(--ink-mut);
+}
+.foot-static { color: var(--warn); letter-spacing: 0.06em; font-weight: 600; }
+
+/* ---------------- responsive ---------------- */
+
+@media (max-width: 1100px) {
+  .span-4 { grid-column: span 6; }
+}
+
+@media (max-width: 720px) {
+  .span-4 { grid-column: span 12; }
+  body { padding: 14px 12px 20px; }
+  .tip-num { font-size: 22px; }
+  .panel-side { white-space: normal; text-align: right; }
+  .block-tile { flex: 0 0 118px; }
+}

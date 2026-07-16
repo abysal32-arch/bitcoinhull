@@ -18,7 +18,7 @@ conventions, verification bar). Rules of the house live in `CLAUDE.md`.
 
 | # | Task | Depends on | Status |
 |---|------|-----------|--------|
-| 01 | Scaffold + design system + full static layout (every panel, placeholder data) | — | ☐ TODO |
+| 01 | Scaffold + design system + full static layout (every panel, placeholder data) | — | ☑ DONE (2026-07-16; 7 panels + strip, tokens locked, consistent placeholders from height 954,321; verified 1280/1000/375, console clean, no page h-scroll) |
 | 02 | Data core: REST poller, store (pub/sub), formatters, live status chip | 01 | ☐ TODO |
 | 03 | Chain-tip panel live: height, time-since-block, recent-blocks strip | 02 | ☐ TODO |
 | 04 | Fees panel live: recommended tiers + plain-English fee verdict | 02 | ☐ TODO |

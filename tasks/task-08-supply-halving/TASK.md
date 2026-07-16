@@ -7,8 +7,9 @@ zero rounding lies.
 ## Spec
 - `js/panels/08-supply.js` + shared helper `HELM.supplyAt(height)`:
   exact era sum — subsidy starts 50 BTC, halves every 210,000 blocks
-  (integer-floor sat math like consensus: `50e8 >> era` sats per block,
-  era = floor(height/210000)); return BTC. If task 06 already inlined this
+  (integer-floor sat math like consensus: `Math.floor(5_000_000_000 / 2**era)`
+  sats per block, era = floor(height/210000) — do NOT use JS `>>` bitshift,
+  it truncates to 32 bits and 5e9 doesn't fit); return BTC. If task 06 already inlined this
   helper, MOVE it to `js/format.js` and make both panels use it; record in
   `_SHARED.md`.
 - SUPPLY panel: hero ← issued BTC (0 decimals); rows ← % of 21M (bar +
