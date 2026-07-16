@@ -117,7 +117,20 @@ palette validator; stat tiles/text don't need it.
 
 ## Every task, before its commit
 
-1. Open `index.html` in the browser preview (`file://` is fine), hard-reload.
+Tooling quirks (learned task 03 — don't re-derive):
+- The Claude browser pane DENIES `file://` — use the dev server:
+  `preview_start` name `bitcoinhull` (swap-key sessions) or `hull` (sessions
+  booted here); both serve http://localhost:8765 (`scripts/hull-server.js`,
+  dev-only — the site itself needs no server).
+- Pane `computer` screenshots can time out while every other pane tool works.
+  Fallback: headless Edge —
+  `& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe"
+  --headless=new --screenshot="$env:TEMP\shot.png" --window-size=1280,1100
+  --virtual-time-budget=8000 http://localhost:8765/index.html`
+  (write to `$env:TEMP` — writing straight to the scratchpad gets
+  Access-denied — then copy).
+
+1. Open `index.html` in the browser preview, hard-reload.
 2. Console clean; values render; kill-network case shows stale states (panel
    tasks: verify by temporarily pointing base URL at a garbage host).
 3. Screenshot as proof to Joe.
