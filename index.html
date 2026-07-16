@@ -105,16 +105,16 @@
   <!-- FEES -->
   <section class="panel span-4" id="panel-fees">
     <div class="panel-head">
-      <h2>Fees</h2>
-      <span class="pill pill-good" data-fee-verdict><span class="dot"></span>CALM</span>
+      <h2>Fees <span class="stale-tag" data-fees-stale hidden>STALE</span></h2>
+      <span class="pill pill-plain" data-fee-verdict><span class="dot"></span><span data-fee-verdict-label>—</span></span>
     </div>
-    <div class="metric-hero"><span class="hero-num" data-fee-fast>3</span><span class="hero-unit">sat/vB</span></div>
-    <div class="hero-sub" data-fee-sub>next block clears at ~3 sat/vB</div>
+    <div class="metric-hero"><span class="hero-num" data-fee-fast>—</span><span class="hero-unit">sat/vB</span></div>
+    <div class="hero-sub" data-fee-sub>—</div>
     <div class="rows">
-      <div class="row"><span>30 min</span><span class="val"><span data-fee-half>2</span> sat/vB</span></div>
-      <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>2</span> sat/vB</span></div>
-      <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>1</span> sat/vB</span></div>
-      <div class="row"><span>Floor</span><span class="val"><span data-fee-min>1</span> sat/vB</span></div>
+      <div class="row"><span>30 min</span><span class="val"><span data-fee-half>—</span> sat/vB</span></div>
+      <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>—</span> sat/vB</span></div>
+      <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>—</span> sat/vB</span></div>
+      <div class="row"><span>Floor</span><span class="val"><span data-fee-min>—</span> sat/vB</span></div>
     </div>
   </section>
 
@@ -199,7 +199,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">CHAIN TIP LIVE — remaining panels + integrity bar still placeholder, wired in tasks 04–08 + 11</span>
+  <span class="foot-static">CHAIN TIP + FEES LIVE — remaining panels + integrity bar still placeholder, wired in tasks 05–08 + 11</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
   <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
@@ -208,6 +208,7 @@
 <script src="js/store.js"></script>
 <script src="js/api.js"></script>
 <script src="js/panels/03-chain.js"></script>
+<script src="js/panels/04-fees.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
