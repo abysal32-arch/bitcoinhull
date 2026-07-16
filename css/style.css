@@ -353,8 +353,16 @@ details.integrity { padding: 0; }
 }
 .flash { animation: hull-flash 0.9s ease-out; }
 
+/* the quieter sibling: value changed, but it's routine (price ticks) —
+   dim→normal ink, no color pulse */
+@keyframes hull-flash-dim {
+  0%   { color: var(--ink-mut); }
+  100% { color: var(--ink); }
+}
+.flash-dim { animation: hull-flash-dim 0.9s ease-out; }
+
 @media (prefers-reduced-motion: reduce) {
-  .flash { animation: none; }
+  .flash, .flash-dim { animation: none; }
   .integrity-caret { transition: none; }
 }
 

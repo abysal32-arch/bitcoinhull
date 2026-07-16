@@ -43,7 +43,10 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 | WS `wss://mempool.space/api/v1/ws` | send `{"action":"want","data":["blocks","stats","mempool-blocks"]}` | task 09 |
 
 Supply/halving are NOT fetched — computed exactly from tip height
-(sum of subsidy eras, halving every 210,000 blocks). Task 08 owns that math.
+(sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
+shipped in task 06 as `HULL.supplyAt(height)` (`js/supply.js`, exact
+integer-sat math, returns BTC, NaN-safe); task 08 reuses it — never
+re-derive or hardcode supply.
 
 ## File map
 
@@ -51,6 +54,7 @@ Supply/halving are NOT fetched — computed exactly from tip height
 index.html          the whole page; script load order at the bottom
 css/style.css       all styling; design tokens at the top in :root
 js/format.js        HULL.fmt.*  number/time formatters (task 02)
+js/supply.js        HULL.supplyAt(height) exact issuance (task 06)
 js/store.js         HULL.store  state + pub/sub          (task 02)
 js/api.js           HULL.api    poll scheduler + backoff (task 02)
 js/panels/NN-*.js   one file per panel, subscribes to store (tasks 03–08)
