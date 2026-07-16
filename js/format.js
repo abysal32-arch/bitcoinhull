@@ -62,6 +62,21 @@
       return Math.round(d / 86400) + ' d ago';
     },
 
+    /* bytes or vB -> millions, number only ("1.6", "0.42") — unit (MB/MvB) lives in markup */
+    mb: function (n) {
+      if (bad(n)) return DASH;
+      var v = n / 1e6;
+      if (v >= 10) return intFmt.format(Math.round(v));
+      if (v >= 1) return strip(v.toFixed(1));
+      return strip(v.toFixed(2));
+    },
+
+    /* seconds -> one-decimal minutes: 588 -> "9.8 min" */
+    mins: function (secs) {
+      if (bad(secs)) return DASH;
+      return strip(Math.max(0, secs / 60).toFixed(1)) + ' min';
+    },
+
     /* seconds -> "45 s" / "12 min" / "3.4 h" / "8.8 d" */
     dur: function (secs) {
       if (bad(secs)) return DASH;

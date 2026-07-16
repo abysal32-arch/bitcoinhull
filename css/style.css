@@ -333,6 +333,12 @@ details.integrity { padding: 0; }
   color: var(--warn);
 }
 .loading { color: var(--ink-mut); }
+.val.loading, .panel-side .val.loading { color: var(--ink-mut); font-weight: 400; }
+
+/* since-last-block escalation — color always paired with the SLOW text tag */
+.slow-tag { font-size: 10px; font-weight: 700; letter-spacing: 0.1em; }
+.since-warn, .panel-side .val.since-warn { color: var(--warn); }
+.since-serious, .panel-side .val.since-serious { color: var(--serious); }
 
 @keyframes hull-flash {
   0%   { background: rgba(247, 147, 26, 0.22); }

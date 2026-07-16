@@ -78,6 +78,12 @@ palette validator; stat tiles/text don't need it.
   tag). NEVER show a fabricated or frozen-looking number without the tag.
 - No console errors/warnings in any state, including API-down.
 - Formatters from `HULL.fmt` only — no ad-hoc `toFixed` in panels.
+- Panel staleness (convention set in task 03): a panel is stale when ANY
+  store key it renders has data older than 2× that key's poll interval
+  (`store.age()`); a never-fetched key is the loading state, not stale.
+  Tag text `STALE n MIN`, n = age of the stalest key. Values with `—` get
+  the `.loading` class (task 03's `setVal` pattern); recheck staleness on a
+  ~30 s tick so it appears without a store event.
 
 ## Data core (task 02) — facts panels rely on
 
@@ -98,8 +104,9 @@ palette validator; stat tiles/text don't need it.
   transitions; silent by default.
 - Every `HULL.fmt` formatter returns `—` for non-finite input, so panels
   pass missing values straight through to get the honest loading state.
-  `fmt.ehs()` returns the EH/s number only (unit lives in markup);
-  `dur`/`diffT` include their units.
+  `fmt.ehs()` and `fmt.mb()` (bytes or vB → MB/MvB number, task 03) return
+  the number only (unit lives in markup); `dur`/`diffT`/`mins` (seconds →
+  one-decimal minutes, task 03) include their units.
 
 ## Every task, before its commit
 
