@@ -29,12 +29,18 @@ conventions, verification bar). Rules of the house live in `CLAUDE.md`.
 | 09 | Live layer: WebSocket upgrade, new-block flash, live title, poll fallback | 03–08 | ☐ TODO |
 | 11 | BitcoinHull Integrity: 0–100 network-health score live (bar + breakdown dropdown; markup shipped 2026-07-16) | 02 | ☐ TODO |
 | 10 | Polish + ship: final QA pass, GitHub repo + Pages deploy + bitcoinhull.com, README, evidence | ALL | ☐ TODO |
+| 12 | v1.1 — Nodes panel: Luke Dashjr daily node file (CORS verified), est. total + listening + 30d trend | 10 | ☐ v1.1 (after 10) |
+| 13 | v1.1 — Treasuries panel: baked bitcointreasuries.net snapshot + as-of tag, monthly re-bake | 10 | ☐ v1.1 (after 10) |
 
 Chunking logic: 01 fixes the look so every later task is pure wiring; 02 is
 the single shared data spine; 03–08 are independent panel tasks (any order,
 one sitting each); 09 turns a polling page into a live instrument; 11 (added
 2026-07-16, Joe) wires the Integrity bar — any time after 02, before 10;
 10 ships. The table row order above (…09, 11, 10) is execution order.
+Tasks 12–13 (added 2026-07-16, Joe) are **v1.1** — new data sources beyond
+mempool.space (Luke Dashjr's CORS-open daily node file; a baked
+bitcointreasuries.net snapshot), sources verified live in their TASK.md
+files. They do not gate v1 and must not start before 10 ships.
 
 ## "Done" definition (task 10 closes against this)
 
@@ -45,7 +51,8 @@ README + QA evidence committed; this table all ☑.
 
 ## Explicitly OUT of v1 (do not start without Joe)
 
-- Lightning section, node-count/version stats, altcoin anything.
+- Lightning section, version stats, altcoin anything. (Node-COUNT stats:
+  promoted out of this list to v1.1 task 12 by Joe, 2026-07-16.)
 - Historical charts beyond what a panel needs (no time-series explorer).
 - User accounts, settings persistence beyond localStorage, custom nodes.
 - Light mode (the Hull is dark; revisit post-v1).
