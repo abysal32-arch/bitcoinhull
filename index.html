@@ -3,15 +3,15 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>⎈ Bitcoinhull</title>
+<title>Bitcoinhull</title>
 <meta name="description" content="Bitcoinhull — a live Bitcoin command point: chain, fees, mempool, price, mining, supply, halving.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%230b0e13'/%3E%3Ctext%20x='32'%20y='46'%20font-size='40'%20text-anchor='middle'%20fill='%23f7931a'%3E%E2%8E%88%3C/text%3E%3C/svg%3E">
+<link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%230b0e13'/%3E%3Ctext%20x='32'%20y='44'%20font-size='28'%20font-family='sans-serif'%20font-weight='700'%20text-anchor='middle'%20fill='%23f7931a'%3EBH%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
 
 <header class="hull-header">
-  <div class="wordmark"><span class="glyph">⎈</span> BITCOIN <b>HULL</b></div>
+  <div class="wordmark">BITCOIN <b>HULL</b></div>
   <div class="header-right">
     <div class="tip"><span class="tip-label">BLOCK</span> <span class="tip-num" data-tip-height>954,321</span></div>
     <div class="chip chip-static" data-conn-chip><span class="dot"></span><span data-conn-label>STATIC</span></div>
@@ -19,6 +19,29 @@
 </header>
 
 <main class="grid">
+
+  <!-- BITCOINHULL INTEGRITY -->
+  <details class="panel span-12 integrity" id="panel-integrity">
+    <summary class="integrity-row">
+      <h2 class="integrity-title">BitcoinHull Integrity</h2>
+      <span class="pill pill-good" data-integrity-verdict><span class="dot"></span>SOLID</span>
+      <span class="bar integrity-bar"><span class="bar-fill" data-integrity-bar style="width:92%"></span></span>
+      <span class="integrity-score"><span class="val" data-integrity-score>92</span><span class="integrity-outof">/100</span></span>
+      <span class="integrity-caret">▾</span>
+    </summary>
+    <div class="integrity-detail">
+      <p class="integrity-blurb">One number for "is the network running clean right now" —
+        a weighted blend of live signals scored against protocol norms. Placeholder values
+        until task 11 wires the live derivation.</p>
+      <div class="rows">
+        <div class="row"><span>Block cadence — time since last block vs the 10 min target</span><span class="val" data-int-cadence>24/25</span></div>
+        <div class="row"><span>Mining muscle — hashrate vs difficulty baseline</span><span class="val" data-int-mining>24/25</span></div>
+        <div class="row"><span>Fee pressure — cost to clear into the next block</span><span class="val" data-int-fees>18/20</span></div>
+        <div class="row"><span>Mempool congestion — backlog depth in blocks</span><span class="val" data-int-mempool>17/20</span></div>
+        <div class="row"><span>Feed freshness — is this page's data current</span><span class="val" data-int-fresh>9/10</span></div>
+      </div>
+    </div>
+  </details>
 
   <!-- CHAIN TIP -->
   <section class="panel span-12" id="panel-chain">
@@ -176,7 +199,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">DATA CORE LIVE — task 02 of 10 · panels still placeholder, wired in tasks 03–08</span>
+  <span class="foot-static">DATA CORE LIVE — panels + integrity bar still placeholder, wired in tasks 03–08 + 11</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
 </footer>
 

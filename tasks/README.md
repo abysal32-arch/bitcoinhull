@@ -27,11 +27,14 @@ conventions, verification bar). Rules of the house live in `CLAUDE.md`.
 | 07 | Mining panel live: hashrate, difficulty, retarget ETA + estimate | 02 | ☐ TODO |
 | 08 | Supply + halving panels live: exact client-side issuance math, countdown | 02, 03 | ☐ TODO |
 | 09 | Live layer: WebSocket upgrade, new-block flash, live title, poll fallback | 03–08 | ☐ TODO |
-| 10 | Polish + ship: final QA pass, GitHub repo + Pages deploy, README, evidence | ALL | ☐ TODO |
+| 11 | BitcoinHull Integrity: 0–100 network-health score live (bar + breakdown dropdown; markup shipped 2026-07-16) | 02 | ☐ TODO |
+| 10 | Polish + ship: final QA pass, GitHub repo + Pages deploy + bitcoinhull.com, README, evidence | ALL | ☐ TODO |
 
 Chunking logic: 01 fixes the look so every later task is pure wiring; 02 is
 the single shared data spine; 03–08 are independent panel tasks (any order,
-one sitting each); 09 turns a polling page into a live instrument; 10 ships.
+one sitting each); 09 turns a polling page into a live instrument; 11 (added
+2026-07-16, Joe) wires the Integrity bar — any time after 02, before 10;
+10 ships. The table row order above (…09, 11, 10) is execution order.
 
 ## "Done" definition (task 10 closes against this)
 
