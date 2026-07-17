@@ -95,6 +95,14 @@ palette validator; stat tiles/text don't need it.
   Tag text `STALE n MIN`, n = age of the stalest key. Values with `—` get
   the `.loading` class (task 03's `setVal` pattern); recheck staleness on a
   ~30 s tick so it appears without a store event.
+- Wall-clock-derived values freeze while blind (task 11): a value computed
+  from `Date.now()` against feed data (e.g. Integrity's cadence score) must
+  freeze at its last fresh-feed result while that feed is stale — letting
+  the clock keep scoring misattributes a measurement outage to the network.
+  (Display clocks like panel 03's "since last block" keep ticking — they
+  report elapsed time, not a judgment.) Integrity's bar fill may use status
+  colors (`.bar-fill.fill-good/-warn/-serious/-critical`) because the
+  verdict pill beside it always carries the text label.
 
 ## Data core (task 02) — facts panels rely on
 

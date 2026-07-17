@@ -212,6 +212,12 @@ body {
   background: var(--accent);
   border-radius: 3px;
 }
+/* integrity bar fill carries the verdict's status color — never alone,
+   the pill beside it always holds the text label (house rule) */
+.bar-fill.fill-good     { background: var(--good); }
+.bar-fill.fill-warn     { background: var(--warn); }
+.bar-fill.fill-serious  { background: var(--serious); }
+.bar-fill.fill-critical { background: var(--critical); }
 
 /* ---------------- BitcoinHull Integrity strip ---------------- */
 

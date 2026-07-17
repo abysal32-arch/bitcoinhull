@@ -24,15 +24,17 @@
   <details class="panel span-12 integrity" id="panel-integrity">
     <summary class="integrity-row">
       <h2 class="integrity-title">BitcoinHull Integrity</h2>
-      <span class="pill pill-good" data-integrity-verdict><span class="dot"></span>SOLID</span>
+      <span class="stale-tag" data-integrity-stale hidden>STALE</span>
+      <span class="pill pill-good" data-integrity-verdict><span class="dot"></span><span data-integrity-verdict-label>SOLID</span></span>
       <span class="bar integrity-bar"><span class="bar-fill" data-integrity-bar style="width:92%"></span></span>
       <span class="integrity-score"><span class="val" data-integrity-score>92</span><span class="integrity-outof">/100</span></span>
-      <span class="integrity-caret">▾</span>
+      <span class="integrity-caret" aria-hidden="true">▾</span>
     </summary>
     <div class="integrity-detail">
       <p class="integrity-blurb">One number for "is the network running clean right now" —
-        a weighted blend of live signals scored against protocol norms. Placeholder values
-        until task 11 wires the live derivation.</p>
+        five live signals scored against protocol norms: block cadence /25, mining muscle /25,
+        fee pressure /20, mempool congestion /20, feed freshness /10. Recomputed as data lands;
+        the rows below always sum to the headline.</p>
       <div class="rows">
         <div class="row"><span>Block cadence — time since last block vs the 10 min target</span><span class="val" data-int-cadence>24/25</span></div>
         <div class="row"><span>Mining muscle — hashrate vs difficulty baseline</span><span class="val" data-int-mining>24/25</span></div>
@@ -192,7 +194,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">WEBSOCKET PUSH + REST FALLBACK (chip tells the truth) — integrity bar still placeholder (task 11); polish + ship = task 10</span>
+  <span class="foot-static">WEBSOCKET PUSH + REST FALLBACK (chip tells the truth) — polish + ship = task 10</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
   <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
@@ -208,6 +210,7 @@
 <script src="js/panels/06-price.js"></script>
 <script src="js/panels/07-mining.js"></script>
 <script src="js/panels/08-supply.js"></script>
+<script src="js/panels/11-integrity.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
