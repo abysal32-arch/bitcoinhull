@@ -40,7 +40,7 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 | `/api/v1/prices` | `{time,USD,EUR,GBP,…}` spot | 60 s |
 | `/api/v1/difficulty-adjustment` | `{progressPercent,difficultyChange,estimatedRetargetDate,remainingBlocks,remainingTime,nextRetargetHeight,timeAvg}` | 5 min |
 | `/api/v1/mining/hashrate/3d` | `{currentHashrate,currentDifficulty}` (H/s, raw) | 5 min |
-| WS `wss://mempool.space/api/v1/ws` | send `{"action":"want","data":["blocks","stats","mempool-blocks"]}` | task 09 |
+| WS `wss://mempool.space/api/v1/ws` | send `{"action":"want","data":["blocks","stats","mempool-blocks"]}` → dump on connect (`blocks` ASCENDING, unlike REST), then ~1 s pushes: `fees`/`mempoolInfo`/`mempool-blocks`/`da`/`vBytesPerSecond` (+ `block` per new block, `conversions` occasionally). `mempoolInfo` is bitcoind shape: `size`→count, `bytes`→vsize, `total_fee` in BTC (REST quotes sats — never map it). `vBytesPerSecond` = live incoming flow, unused (the honest source task 05 wanted — v1.1 candidate). | push (task 09) |
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
@@ -99,11 +99,19 @@ palette validator; stat tiles/text don't need it.
 ## Data core (task 02) — facts panels rely on
 
 - Store key `conn` ∈ `polling | live | degraded | down`; the header chip text
-  is the uppercase state. `polling` exists only between boot and the first
-  resolved request.
+  is the uppercase state. Task-09 semantics: `live` = the WebSocket is
+  healthy (push data flowing); `polling` = REST-only — endpoints fresh but
+  no socket (boot before the socket connects looks like this too);
+  `degraded`/`down` = stale endpoints as below, except all-stale with a
+  healthy socket reads `degraded`, not `down`.
 - An endpoint is **stale** when it has no data, has ≥2 consecutive failed
-  fetches, or its data is older than 2× its poll interval. live = none
-  stale · degraded = some · down = all (or browser offline). Failed polls
+  fetches, or its data is older than 2× its EFFECTIVE poll interval —
+  the table interval × any live-layer cadence stretch (task 09: ×5 on
+  fees/mempool/mempoolBlocks/difficulty while the socket is healthy, so
+  those are judged at 2×5× while stretched; socket pushes keep their
+  store age near zero anyway). live = none stale · degraded = some ·
+  down = all (or browser offline — unless the socket is still
+  delivering, which outranks the browser's offline verdict). Failed polls
   retry on exponential backoff: 5 s doubling, capped at 5 min; a 15 s abort
   kills hung fetches.
 - `HULL.api.BASE` is the single base URL, deliberately mutable at runtime;
@@ -120,7 +128,44 @@ palette validator; stat tiles/text don't need it.
   one-decimal minutes, task 03) include their units. `fmt.pct` takes an
   optional 3rd arg `dp` (decimals, default 1) — task 08 uses 2 for issued-%
   and inflation. `fmt.monthYear(unixSeconds)` → `"May 2028"` (task 08,
-  halving ETA — month precision).
+  halving ETA — month precision). `fmt.usdK(n)` → compact USD for tight
+  spots (`118420` → `"$118k"`, task 09, the live title).
+
+## Live layer (task 09) — facts later tasks rely on
+
+- `js/live.js` (`HULL.live`) maps WS pushes into the SAME store keys REST
+  fills — panels never know the transport. `HULL.live.URL` is mutable and
+  `HULL.live.stop()` / `.start()` are the WS-kill drill levers (the
+  `HULL.api.BASE` garbage drill does NOT touch the socket).
+- Socket health = data flowing (healthy on first message; silent 60 s =
+  dead → reconnect on the same 5 s→5 min backoff ladder as REST). While
+  healthy, REST cadence stretches ×5 via `HULL.api.setCadence` for
+  `fees`/`mempool`/`mempoolBlocks`/`difficulty` ONLY — those are the keys
+  the socket heartbeats ~every second. `tipHeight`/`blocks` REST polls
+  stay at 60 s: they only move per block, and a stretched poll would trip
+  the panels' hardcoded 2×-interval stale thresholds between blocks.
+  `prices` stays at 60 s too (`conversions` pushes are occasional, not a
+  heartbeat).
+- Stats-family pushes apply at most once per 10 s per key (`store.set`
+  fires subscribers even on unchanged values; panels were built for a
+  30 s world). A message carrying a new `block` bypasses the throttle.
+- `fee_histogram` exists only in REST — the `mempoolInfo` mapper carries
+  the last one forward (clearing-rate line can lag ≤150 s while REST is
+  healthy), but the carry EXPIRES after 5 min without a fresh REST
+  delivery: the line dashes out rather than quote an aged histogram that
+  rides the socket's freshness.
+- New-block moment: `.flash-tile` accent wash on the strip's first tile
+  (applied by live.js onto panel 03's static tile nodes) + panel 03's own
+  header flash; all three flash classes die under
+  `prefers-reduced-motion: reduce`. `document.title` =
+  `"⎈ <height> · <usdK> · <fastest> sat/vB"`, rebuilt on
+  `tipHeight`/`prices`/`fees` store events + a 30 s tick, written only on
+  change; it is a display surface, so it leads with `STALE ·` (front,
+  because narrow tabs truncate the tail) when any of its keys outlives
+  every honest cadence (>180 s) — a frozen title is a lie like any other.
+  Socket health is earned only by parsed messages carrying wanted keys —
+  unparseable frames or unwanted-channel chatter never hold LIVE. REST tipHeight/blocks responses that would regress
+  a newer pushed tip are rejected (`accept` filters in main.js).
 
 ## Every task, before its commit
 

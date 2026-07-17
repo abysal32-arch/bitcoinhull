@@ -40,6 +40,23 @@
       return '$' + intFmt.format(Math.round(n));
     },
 
+    /* compact USD for tight spots (the live title, task 09):
+       845 -> "$845" · 9420 -> "$9.42k" · 118420 -> "$118k" · 2.37e12 -> "$2.37T" */
+    usdK: function (n) {
+      if (bad(n)) return DASH;
+      if (n < 1e3) return '$' + intFmt.format(Math.round(n));
+      var units = [[1e12, 'T'], [1e9, 'B'], [1e6, 'M'], [1e3, 'k']], i;
+      for (i = 0; i < units.length - 1 && n < units[i][0]; i++) { /* pick */ }
+      var v = n / units[i][0];
+      /* rounding can carry into the next unit up: 999,600 is "$1M", not
+         "$1,000k" — test the rounding the >=100 branch will actually do */
+      if (Math.round(v) >= 1000 && i > 0) { i -= 1; v = n / units[i][0]; }
+      var u = units[i][1];
+      if (v >= 100) return '$' + intFmt.format(Math.round(v)) + u;
+      if (v >= 10) return '$' + strip(v.toFixed(1)) + u;
+      return '$' + strip(v.toFixed(2)) + u;
+    },
+
     /* fee rates: one decimal below 10 sat/vB, whole numbers above */
     satvb: function (n) {
       if (bad(n)) return DASH;

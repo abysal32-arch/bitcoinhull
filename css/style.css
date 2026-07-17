@@ -361,8 +361,16 @@ details.integrity { padding: 0; }
 }
 .flash-dim { animation: hull-flash-dim 0.9s ease-out; }
 
+/* the loud sibling for the block strip: a block just landed (task 09) —
+   accent wash that settles back into the tile's own surface */
+@keyframes hull-flash-tile {
+  0%   { background: rgba(247, 147, 26, 0.26); border-color: rgba(247, 147, 26, 0.55); }
+  100% { background: var(--surface-2); border-color: var(--border); }
+}
+.flash-tile { animation: hull-flash-tile 0.9s ease-out; }
+
 @media (prefers-reduced-motion: reduce) {
-  .flash, .flash-dim { animation: none; }
+  .flash, .flash-dim, .flash-tile { animation: none; }
   .integrity-caret { transition: none; }
 }
 
