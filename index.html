@@ -145,7 +145,7 @@
 
   <!-- MINING -->
   <section class="panel span-4" id="panel-mining">
-    <div class="panel-head"><h2>Mining</h2></div>
+    <div class="panel-head"><h2>Mining <span class="stale-tag" data-mining-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-mining-hashrate>912</span><span class="hero-unit">EH/s</span></div>
     <div class="hero-sub">network hashrate</div>
     <div class="rows">
@@ -192,7 +192,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">CHAIN TIP + FEES + MEMPOOL + PRICE LIVE — remaining panels + integrity bar still placeholder, wired in tasks 07–08 + 11</span>
+  <span class="foot-static">CHAIN TIP + FEES + MEMPOOL + PRICE + MINING LIVE — supply/halving panels + integrity bar still placeholder, wired in tasks 08 + 11</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
   <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
@@ -205,6 +205,7 @@
 <script src="js/panels/04-fees.js"></script>
 <script src="js/panels/05-mempool.js"></script>
 <script src="js/panels/06-price.js"></script>
+<script src="js/panels/07-mining.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>
