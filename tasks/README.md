@@ -35,16 +35,20 @@ conventions, verification bar). Rules of the house live in `CLAUDE.md`.
 | 10 | Polish + ship: final QA pass, GitHub repo + Pages deploy + bitcoinhull.com, README, evidence | ALL | ☑ DONE (2026-07-17; QA sweep all green — 1440/1000/768/375 no h-scroll, page-wide down drill 7/8 panels tagged + mining honest per its 300 s threshold (task-07 11-min evidence), recovery without reload, cold load 49 ms, no NaN/undefined, 54/54 tabular-nums, Chrome+Edge identical (⚠ Firefox not installed = named gap), 24 h soak inferred from task-09 heap-flat (named); footer → attribution/GitHub/v1.0.0 + permanent Clark credit; repo github.com/abysal32-arch/bitcoinhull public, Pages built from `bac7805`, CNAME committed, custom domain wired (github.io 301s → bitcoinhull.com; GitHub edge verified serving the Hull for that host pre-DNS via --resolve), `v1.0.0` tagged; QA.md committed. ⚠ TWO PENDINGS, both post-registrar: Joe flips DNS (apex A → 185.199.108/109/110/111.153, www CNAME → abysal32-arch.github.io), then Enforce-HTTPS tick + the in-browser bitcoinhull.com WS pass close the done-definition) |
 | 12 | v1.1 — Nodes panel: Luke Dashjr daily node file (CORS verified), est. total + listening + 30d trend | 10 | ☐ v1.1 (after 10) |
 | 13 | v1.1 — Treasuries panel: baked bitcointreasuries.net snapshot + as-of tag, monthly re-bake | 10 | ☐ v1.1 (after 10) |
+| 14 | v1.1 — Incoming-flow row: socket-only vB/s on the mempool panel (the honest stat task 05 dropped, source found in 09) | 10 | ☐ v1.1 (after 10) |
 
 Chunking logic: 01 fixes the look so every later task is pure wiring; 02 is
 the single shared data spine; 03–08 are independent panel tasks (any order,
 one sitting each); 09 turns a polling page into a live instrument; 11 (added
 2026-07-16, Joe) wires the Integrity bar — any time after 02, before 10;
 10 ships. The table row order above (…09, 11, 10) is execution order.
-Tasks 12–13 (added 2026-07-16, Joe) are **v1.1** — new data sources beyond
-mempool.space (Luke Dashjr's CORS-open daily node file; a baked
-bitcointreasuries.net snapshot), sources verified live in their TASK.md
-files. They do not gate v1 and must not start before 10 ships.
+Tasks 12–14 are **v1.1** (12–13 added 2026-07-16 by Joe; 14 laid out
+2026-07-17 per Joe's "next 3"): two new data sources beyond mempool.space
+(Luke Dashjr's CORS-open daily node file; a baked bitcointreasuries.net
+snapshot — both verified live in their TASK.md files) plus the socket-only
+incoming-flow row. They do not gate v1 and must not start before 10's
+closers are done. Priority order = 12 → 13 → 14; when all three tick,
+v1.1 is feature-complete (tagging `v1.1.0` is Joe's call).
 
 ## "Done" definition (task 10 closes against this)
 
