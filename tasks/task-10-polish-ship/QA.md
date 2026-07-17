@@ -42,6 +42,21 @@ findings all fixed and re-drilled.
 - Live verification: github.io URL end-to-end incl. WebSocket (LIVE chip);
   bitcoinhull.com re-verified after DNS propagation — status recorded below.
 
-### Live-URL verification log
+### Live-URL verification log (2026-07-17)
 
-Filled at deploy time — see the bottom of this file.
+- Pages build: `built` from `bac7805`, no errors, ~30 s after push.
+- `https://abysal32-arch.github.io/bitcoinhull/` → `301 → http://bitcoinhull.com/`
+  (server: GitHub.com) — custom domain wired.
+- GitHub edge already serves the Hull for the custom hostname pre-DNS
+  (verified via `curl --resolve bitcoinhull.com:80:185.199.108.153`):
+  `200 OK`, `<title>Bitcoinhull</title>`, integrity markup and the v1.0.0
+  footer present. The site is live the moment DNS flips.
+- `v1.0.0` tag pushed.
+- Current DNS at the registrar still points at parking
+  (76.223.105.230 / 13.248.243.5) — **PENDING (Joe, registrar):** apex A
+  records → the four GitHub IPs, `www` CNAME → `abysal32-arch.github.io`.
+- **PENDING (post-DNS):** cert issues (~1 h after DNS lands, same as
+  bitcoinburned.com) → tick Enforce HTTPS
+  (`gh api repos/abysal32-arch/bitcoinhull/pages -X PATCH -F https_enforced=true`),
+  then the in-browser bitcoinhull.com pass: LIVE chip (WebSocket on https),
+  panels live, console clean — the last box of the v1 done-definition.
