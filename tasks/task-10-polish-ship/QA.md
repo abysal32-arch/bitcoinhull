@@ -52,11 +52,30 @@ findings all fixed and re-drilled.
   `200 OK`, `<title>Bitcoinhull</title>`, integrity markup and the v1.0.0
   footer present. The site is live the moment DNS flips.
 - `v1.0.0` tag pushed.
-- Current DNS at the registrar still points at parking
-  (76.223.105.230 / 13.248.243.5) — **PENDING (Joe, registrar):** apex A
-  records → the four GitHub IPs, `www` CNAME → `abysal32-arch.github.io`.
-- **PENDING (post-DNS):** cert issues (~1 h after DNS lands, same as
-  bitcoinburned.com) → tick Enforce HTTPS
-  (`gh api repos/abysal32-arch/bitcoinhull/pages -X PATCH -F https_enforced=true`),
-  then the in-browser bitcoinhull.com pass: LIVE chip (WebSocket on https),
-  panels live, console clean — the last box of the v1 done-definition.
+- ~~PENDING: DNS + Enforce HTTPS + in-browser pass~~ → **ALL CLOSED
+  2026-07-17, log below. v1 done-definition complete.**
+
+### Post-DNS closers (2026-07-17) — CLOSED
+
+- DNS flip (Joe, GoDaddy): apex A → the four GitHub IPs, `www` CNAME →
+  `abysal32-arch.github.io`. Two snags worth remembering: GoDaddy publishes
+  edits to its authoritative NS within ~1 min, BUT (1) the parking IPs
+  (76.223.105.230 / 13.248.243.5) came from a **"WebsiteBuilder Site" A
+  record** whose value renders as a friendly label, not IPs — it, not
+  Forwarding, was re-asserting parking; (2) verify against
+  `ns31/ns32.domaincontrol.com` directly, resolver caches lie for ~1 h.
+- Cert: GitHub does NOT restart provisioning on a same-value cname re-save
+  (silent no-op) — the unstick is **remove + re-add the custom domain**
+  (`PUT` cname null, then cname back; NOTE the API verb is `PUT`, the
+  `-X PATCH` in the Ship list above 404s). Cert `approved` ~12 min later,
+  covers bitcoinhull.com + www.bitcoinhull.com, expires 2026-10-15.
+- Enforce HTTPS: ticked via `PUT -F https_enforced=true` → `true`.
+  Verified: `https://bitcoinhull.com` 200 (Server: GitHub.com), `http://`
+  301 → https, `https://www` 301 → apex 200.
+- In-browser bitcoinhull.com pass (Chromium pane, the last box): chip
+  **LIVE** = WebSocket healthy over `wss://mempool.space/api/v1/ws` from
+  the https origin; real blocks landing (tip 958,433, strip + NEXT live);
+  live title `⎈ 958,433 · $63.4k · 2.5 sat/vB`; Integrity 81 HOLDING;
+  fees CALM 2.5 sat/vB; mempool 46 vMB; DOM scan: 0 NaN/undefined/null/
+  Infinity nodes, 0 loading dashes, 0 stale tags; **console: zero
+  messages**. Screenshot in session log.
