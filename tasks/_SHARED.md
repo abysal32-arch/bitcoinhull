@@ -117,7 +117,10 @@ palette validator; stat tiles/text don't need it.
   pass missing values straight through to get the honest loading state.
   `fmt.ehs()` and `fmt.mb()` (bytes or vB → MB/MvB number, task 03) return
   the number only (unit lives in markup); `dur`/`diffT`/`mins` (seconds →
-  one-decimal minutes, task 03) include their units.
+  one-decimal minutes, task 03) include their units. `fmt.pct` takes an
+  optional 3rd arg `dp` (decimals, default 1) — task 08 uses 2 for issued-%
+  and inflation. `fmt.monthYear(unixSeconds)` → `"May 2028"` (task 08,
+  halving ETA — month precision).
 
 ## Every task, before its commit
 

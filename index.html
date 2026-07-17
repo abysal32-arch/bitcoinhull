@@ -161,7 +161,7 @@
 
   <!-- SUPPLY -->
   <section class="panel span-4" id="panel-supply">
-    <div class="panel-head"><h2>Supply</h2></div>
+    <div class="panel-head"><h2>Supply <span class="stale-tag" data-supply-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
     <div class="hero-sub">issued of 21,000,000</div>
     <div class="rows">
@@ -176,14 +176,14 @@
 
   <!-- HALVING -->
   <section class="panel span-4" id="panel-halving">
-    <div class="panel-head"><h2>Halving</h2></div>
+    <div class="panel-head"><h2>Halving <span class="stale-tag" data-halving-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-halving-blocks>95,679</span><span class="hero-unit">blocks</span></div>
     <div class="hero-sub">until subsidy halves</div>
     <div class="rows">
       <div class="row"><span>Estimated</span><span class="val" data-halving-date>≈ May 2028</span></div>
       <div class="row"><span>Next subsidy</span><span class="val"><span data-halving-next>1.5625</span> BTC</span></div>
       <div class="row row-bar">
-        <span>Era 5</span>
+        <span>Era <span data-halving-era>5</span></span>
         <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-halving-erabar style="width:54.4%"></span></span><span class="val" data-halving-erapct>54.4%</span></span>
       </div>
     </div>
@@ -192,7 +192,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span class="foot-static">CHAIN TIP + FEES + MEMPOOL + PRICE + MINING LIVE — supply/halving panels + integrity bar still placeholder, wired in tasks 08 + 11</span>
+  <span class="foot-static">ALL PANELS LIVE — integrity bar still placeholder (task 11); websocket push lands in task 09</span>
   <span>data: mempool.space · vanilla HTML/CSS/JS · zero build</span>
   <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
@@ -206,6 +206,7 @@
 <script src="js/panels/05-mempool.js"></script>
 <script src="js/panels/06-price.js"></script>
 <script src="js/panels/07-mining.js"></script>
+<script src="js/panels/08-supply.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

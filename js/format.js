@@ -10,6 +10,7 @@
   var DASH = '—'; /* — */
   var intFmt = new Intl.NumberFormat('en-US');
   var btcFmt = new Intl.NumberFormat('en-US', { maximumFractionDigits: 8 });
+  var monthFmt = new Intl.DateTimeFormat('en-US', { month: 'short', year: 'numeric' });
 
   function bad(n) { return typeof n !== 'number' || !isFinite(n); }
 
@@ -46,10 +47,10 @@
       return strip(n.toFixed(1));
     },
 
-    /* 37.42 -> "37.4%" · pct(2.1, true) -> "+2.1%" */
-    pct: function (n, signed) {
+    /* 37.42 -> "37.4%" · pct(2.1, true) -> "+2.1%" · pct(95.447, null, 2) -> "95.45%" */
+    pct: function (n, signed, dp) {
       if (bad(n)) return DASH;
-      return (signed && n > 0 ? '+' : '') + strip(n.toFixed(1)) + '%';
+      return (signed && n > 0 ? '+' : '') + strip(n.toFixed(dp == null ? 1 : dp)) + '%';
     },
 
     /* unix seconds -> "just now" / "4 min ago" / "3 h ago" / "2 d ago" */
@@ -60,6 +61,13 @@
       if (d < 3600) return Math.floor(d / 60) + ' min ago';
       if (d < 172800) return Math.round(d / 3600) + ' h ago';
       return Math.round(d / 86400) + ' d ago';
+    },
+
+    /* unix seconds -> "May 2028" — month precision only; anything finer is a
+       lie for multi-year block-count ETAs */
+    monthYear: function (ts) {
+      if (bad(ts)) return DASH;
+      return monthFmt.format(new Date(ts * 1000));
     },
 
     /* bytes or vB -> millions, number only ("1.6", "0.42") — unit (MB/MvB) lives in markup */
