@@ -1,7 +1,13 @@
 /* Bitcoin Hull — blockchain panel (task 15; height-first per Joe
    2026-07-18): block-height hero, then UTXO-set size, chain size,
    prior-year realized block time. UTXO and chain size come from
-   blockchain.info charts (aux third-party, 6 h). The baked OP_RETURN row
+   blockchain.info charts (aux third-party, 6 h) — since task 18 both
+   prefer a FRESHER feed when it's alive (UTXO: the hourly-resolution
+   utxo-count chart; chain size: Blockchair's live scalar, docs-confirmed
+   same semantics as the chart = raw block files excl. indexes/undo) and
+   fall back to the daily charts otherwise. The fresh feeds are NOT in
+   FEEDS: their death degrades honestly to the chart values instead of
+   tagging a healthy panel. The baked OP_RETURN row
    retired in task 17: Joe vetoed baked-as-of labels, and 2026-07-18
    research re-confirmed NO live source exists (opreturn.org, the one site
    that had it, died ~May 2026) — no label allowed + no live feed = no
@@ -55,15 +61,30 @@
     return worst;
   }
 
+  /* newest y of `key` if that feed is fresh (2x freshS), else NaN */
+  function freshY(key, freshS) {
+    var age = store.age(key);
+    return isFinite(age) && age <= 2 * freshS ? lastY(key) : NaN;
+  }
+
   function renderAll() {
     var tip = store.get('tipHeight');
     setVal(heightEl, fmt.int(bad(tip) ? NaN : tip));
 
-    setVal(utxoEl, fmt.int(lastY('utxoSeries')));
+    var utxoFresh = freshY('utxoHourly', 1800);
+    setVal(utxoEl, fmt.int(bad(utxoFresh) ? lastY('utxoSeries') : utxoFresh));
 
-    /* charts serve MB (decimal) — display GB */
-    var mb = lastY('chainSize');
-    setVal(sizeEl, fmt.gb(bad(mb) ? NaN : mb / 1000));
+    /* Blockchair live bytes when fresh; else the chart's MB (decimal) */
+    var chair = store.get('chairStats');
+    var chairAge = store.age('chairStats');
+    var gb = NaN;
+    if (chair && !bad(chair.sizeBytes) && isFinite(chairAge) && chairAge <= 2 * 900) {
+      gb = chair.sizeBytes / 1e9;
+    } else {
+      var mb = lastY('chainSize');
+      if (!bad(mb)) gb = mb / 1000;
+    }
+    setVal(sizeEl, fmt.gb(gb));
 
     var bt = hist.priorYearBlockTime();
     setVal(btYearEl, fmt.mmss(bt == null ? NaN : bt));
@@ -79,6 +100,8 @@
   store.on('chainSize', renderAll);
   store.on('diffHistory', renderAll);
   store.on('blocks', renderAll);
+  store.on('chairStats', renderAll);
+  store.on('utxoHourly', renderAll);
 
   setInterval(renderAll, TICK_MS);
   renderAll();

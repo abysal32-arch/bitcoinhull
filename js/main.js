@@ -53,6 +53,22 @@
              companies: j.companies && j.companies.length ? j.companies.length : NaN };
   }
 
+  /* task 18: Blockchair live scalars — a FRAGILE origin (their docs
+     discourage client-side use, the anti-bot heuristic can 430 an IP at
+     low volume, and they reserve the right to drop CORS without notice).
+     Contract: gentle 15-min poll, failures are an EXPECTED state (panels
+     fall back to the daily charts when this feed isn't fresh — see
+     17-transactions.js / 15-blockchain.js), and never read its `nodes`
+     (broken non-metric, reads 303) or `outputs` (includes spent). */
+  function parseChairStats(text) {
+    var j = JSON.parse(text);
+    var d = j && j.data;
+    if (!d || typeof d.transactions !== 'number' || !isFinite(d.transactions)) {
+      throw new Error('unexpected blockchair payload');
+    }
+    return { tx: d.transactions, sizeBytes: d.blockchain_size };
+  }
+
   /* name, path, store key, interval, accept, opts — the _SHARED.md endpoint
      table. nodes (task 12) is the one second-origin feed: absolute URL,
      text parser, 6 h cadence, aux = never gates the conn chip. */
@@ -99,7 +115,15 @@
        per-IP burst limit (~5-9 rapid calls -> 429). */
     ['treasuries',    'https://api.coingecko.com/api/v3/companies/public_treasury/bitcoin',
                                                        'treasuries',   3600000, null,
-                                                       { parse: parseTreasuries, aux: true, backoffCapMs: 3600000 }]
+                                                       { parse: parseTreasuries, aux: true, backoffCapMs: 3600000 }],
+    /* task 18: fresh-preferred live scalars (fallbacks stay: the daily
+       charts above). utxo-count at a short timespan serves SUB-HOURLY
+       points (verified 2026-07-18: period=hour, newest ~76 min old). */
+    ['chairStats',    'https://api.blockchair.com/bitcoin/stats',
+                                                       'chairStats',    900000, null,
+                                                       { parse: parseChairStats, aux: true, backoffCapMs: 3600000 }],
+    ['utxoHourly',    'https://api.blockchain.info/charts/utxo-count?timespan=1weeks&format=json&cors=true',
+                                                       'utxoHourly',   1800000, null, { aux: true, backoffCapMs: 3600000 }]
   ];
   /* task 12: seed the nodes store from the baked Luke history BEFORE the
      polls start — his server's duplicate CORS header blocks every browser

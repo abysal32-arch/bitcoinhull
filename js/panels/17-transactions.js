@@ -1,8 +1,13 @@
 /* Bitcoin Hull — transactions panel (task 17, Joe 2026-07-18): the
    Clark-catalog transaction stats, from blockchain.info charts (aux
    third-party origin, 6 h cadence, CORS via cors=true):
-     hero        cumulative all-time tx count (n-transactions-total,
-                 newest point of a 30-day window — the chart updates daily)
+     hero        cumulative all-time tx count — LIVE from Blockchair when
+                 that feed is fresh (task 18; ~71 s server cadence), else
+                 the day-bucketed n-transactions-total chart (≤ ~2 days
+                 behind). Blockchair is fragile by design (see main.js) —
+                 it is deliberately NOT in this panel's stale FEEDS: its
+                 death degrades the hero to the chart value, which is
+                 honest, rather than tagging a healthy panel.
      count 30d   sum of the exact daily series (n-transactions, ~30 points)
      rate 30d    count / the series' own covered seconds
      avg/block   count / blocks actually mined over that SAME window —
@@ -59,8 +64,17 @@
     return worst;
   }
 
+  /* live Blockchair total when its feed is fresh (2x its 15-min poll),
+     null otherwise — callers fall back to the daily chart */
+  function chairTx() {
+    var v = store.get('chairStats');
+    var age = store.age('chairStats');
+    return v && !bad(v.tx) && isFinite(age) && age <= 2 * 900 ? v.tx : null;
+  }
+
   function renderAll() {
-    setVal(totalEl, fmt.int(lastY('txTotal')));
+    var live = chairTx();
+    setVal(totalEl, fmt.int(live != null ? live : lastY('txTotal')));
 
     var s = store.get('tx30d');
     var vals = s && s.values;
@@ -97,6 +111,7 @@
   store.on('tx30d', renderAll);
   store.on('diffHistory', renderAll);
   store.on('blocks', renderAll);
+  store.on('chairStats', renderAll);
 
   setInterval(renderAll, TICK_MS); /* staleness stays honest between slow polls */
   renderAll(); /* honest loading state before the first poll resolves */

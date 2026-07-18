@@ -13,8 +13,10 @@
               'lightning', 'diffHistory', 'hashrate3y',
               'utxoSeries', 'chainSize', 'priceSeries', 'txSeries',
               'vbps', /* task 14: socket-only incoming flow, vB/s */
-              'txTotal', 'tx30d', 'treasuries' /* task 17: transactions
-                panel + the now-live CoinGecko treasuries feed */];
+              'txTotal', 'tx30d', 'treasuries', /* task 17: transactions
+                panel + the now-live CoinGecko treasuries feed */
+              'chairStats', 'utxoHourly' /* task 18: fresh-preferred live
+                scalars (Blockchair + hourly UTXO chart) */];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */

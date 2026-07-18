@@ -69,6 +69,51 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
   height at its start-edge) — all anchored on the series' own dates.
   `fmt.txs` formats the rate ("7.8 tx/s").
 
+### Fifth origin (task 18): Blockchair live scalars — FRESH-PREFERRED ONLY
+
+- `https://api.blockchair.com/bitcoin/stats` — keyless, single ACAO `*`
+  (curl-counted twice 51 min apart + real-browser fetch from the
+  bitcoinhull.com origin, 2026-07-18), server cache ~71 s. Parsed to
+  `{tx: transactions (cumulative all-time, docs-confirmed), sizeBytes:
+  blockchain_size (raw block files EXCL. indexes/undo — docs-confirmed
+  same semantics as the blocks-size chart)}`, store key `chairStats`,
+  poll 15 min aux. ⚠ FRAGILE BY DESIGN — their docs say web apps
+  "shouldn't make direct API requests" client-side, the CORS policy "may
+  be changed in the future without any warnings", an anti-bot heuristic
+  can 430-blacklist an IP at very low volume (observed at ~5 rapid
+  calls; one GitHub report at 1-2/day), quota 1,440/day + 30/min, and
+  the v2 API carries maintenance-mode signals. CONTRACT: panels PREFER a
+  fresh `chairStats` (age ≤ 2× its 15-min interval) and silently FALL
+  BACK to the daily charts otherwise; `chairStats` never sits in any
+  panel's stale-tag FEEDS (its death must not tag a healthy panel);
+  never poll faster; NEVER read its `nodes` (broken non-metric, reads
+  303) or `outputs` (cumulative incl. spent — NOT the UTXO set).
+- `utxo-count?timespan=1weeks` (same blockchain.info charts origin) —
+  SUB-HOURLY resolution (period=hour, newest point ~1.3 h old when
+  verified), store key `utxoHourly`, poll 30 min aux; the Blockchain
+  panel prefers it fresh and falls back to the 4y daily `utxoSeries`
+  (which stays untouched — Integrity's baseline still reads ONLY the
+  4y series).
+
+### Live-source verdicts (task-18 research, 2026-07-18 — don't re-derive)
+
+- **Node count: NO shippable live source exists.** bitnodes.io domain
+  EXPIRED 2026-05-03 (NXDOMAIN); coin.dance/nodes froze days later
+  (fed by bitnodes, inferred); Blockchair's field is a non-metric;
+  bitnod.es (BitMEX's replacement, ~28k) has NO public API; the two
+  real crawlers alive today BOTH lack CORS: pesquisa.hacknodes.xyz
+  (alt-bitnodes revival, sub-hourly, total ~11k reachable, service
+  hours old) and KIT DSN (academic, daily since 2015, 6.8 MB raw
+  dossier). Luke's baked estimate stays; CORS-request email drafts for
+  hacknodes + bitcoinvisuals live in the task-18 folder (Joe sends).
+- **Lightning: mempool.space's ~month-old snapshot is the best
+  CORS-open option, period.** The stall is product-wide on their side
+  (their own /lightning page renders the same stale figures; 24h/3d/1w
+  interval endpoints return []). 1ml: no CORS + undatable. Amboss:
+  CORS allowlist (third-party origins cut off). bitcoinvisuals: the
+  freshest data anywhere (~1-2 days) but ZERO CORS + one 3.9 MB CSV —
+  flips to winner if they ever add a header.
+
 ### Fourth origin (task 17): CoinGecko treasuries — LIVE
 
 - `https://api.coingecko.com/api/v3/companies/public_treasury/bitcoin` —
