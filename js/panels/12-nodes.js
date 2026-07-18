@@ -23,6 +23,7 @@
   var totalEl = panel.querySelector('[data-nodes-total]');
   var listenEl = panel.querySelector('[data-nodes-listening]');
   var trendEl = panel.querySelector('[data-nodes-trend]');
+  var asOfEl = panel.querySelector('[data-nodes-asof]');
 
   function setVal(el, text) {
     el.textContent = text;
@@ -53,12 +54,8 @@
 
   /* age of the newest row once past the 48 h freshness bar; 0 = fresh.
      A never-fetched key is the loading state, not stale. BAKED data is
-     exempt from the tag (an aging bake must not alarm). ⚠ The visible
-     "baked YYYY-MM-DD" line was REMOVED per Joe 2026-07-18 (task 19) —
-     the panel now discloses estimate-ness only via "est." + the
-     "daily estimate" credit; the monthly re-bake sitting is what keeps
-     the number from drifting far. Self-heals to genuinely live if Luke
-     ever fixes his doubled CORS header. */
+     exempt: its visible "baked YYYY-MM-DD" line is the honesty mechanism
+     (task-13 rule) — an aging bake is disclosed, not alarmed. */
   function staleSeconds() {
     var v = store.get('nodes');
     if (!v || bad(v.ts) || v.baked) return 0;
@@ -72,6 +69,7 @@
     setVal(totalEl, fmt.int(v && v.total));
     setVal(listenEl, fmt.int(v && v.listening));
     setVal(trendEl, trendText(v));
+    asOfEl.textContent = v && v.baked ? ' · baked ' + v.baked : '';
     panel.classList.toggle('stale', worst > 0);
     staleTag.hidden = !worst;
     if (worst) staleTag.textContent = 'STALE ' + Math.round(worst / 3600) + ' H';

@@ -190,24 +190,20 @@ tag (task-13 rule: as-of IS the honesty for baked data).
   The monthly BigQuery OP_RETURN sitting continues for bitcoinburned
   only.
 
-### One equal tier (task 19 — the minor tier is RETIRED)
+### Minor-stat tier (task 15; rescaled task 17)
 
-- Joe, 2026-07-18 (task 19): ONE size for all 12 panels, and ALL TWELVE
-  must fit on screen at once (verified: 12th panel bottom = 902 px at
-  1280×940). `.panel-minor` and `.asof` classes are gone. Density
-  tightened again (panel padding 7/12/8, rows 3px pad, grid gap 8).
-- Grid order (3 per row): Chain security (the RENAMED mining panel —
-  ids/hooks keep `mining`; the task-15 standalone security panel + its
-  `minersRevenue` feed are GONE) | Price | Nodes; Blockchain (height
-  hero, UTXO 2nd) | Mempool | Transactions; Supply | Fees | Difficulty
-  retarget; Halving | Corporate treasuries | Lightning. Chain-tip strip
-  below, footer last.
-- ⚠ Nodes panel: the visible `· baked <date>` line was REMOVED per Joe
-  (task 19). The baked stale-tag exemption REMAINS (an aging bake must
-  not alarm); disclosure now rides only on "est." + the luke.dashjr.org
-  "daily estimate" credit + the monthly re-bake sitting. This overrides
-  the task-13 "as-of line IS the honesty" rule for THIS panel only —
-  any future bake still shows its date unless Joe says otherwise.
+- `.panel-minor` on a `.panel` = the small tier (Corporate treasuries,
+  Lightning). Same grid, same honest-state rules, HALF the major scale
+  since task 17's density pass (majors themselves shrank to ~half their
+  v1.1 footprint; type floors are legibility-bound, not literal 50% —
+  11.5px major rows / 9.5px minor rows). Minor cards sit BELOW the major
+  grid, ABOVE the chain-tip strip (order fixed by Joe 2026-07-17:
+  majors → minors → chain tip).
+- Major-grid order (Joe, 2026-07-18, task 17 — 3 per row): Chain
+  security (the RENAMED mining panel — ids/hooks keep `mining`; the
+  task-15 standalone security panel + its `minersRevenue` feed are GONE)
+  | Price | Nodes; Supply | Mempool | Transactions; Fees | Blockchain
+  (height hero, UTXO 2nd) | Difficulty retarget; Halving.
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
