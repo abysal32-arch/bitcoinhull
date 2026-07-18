@@ -12,9 +12,10 @@
                      HULL.hist) vs the average per-epoch growth over the
                      last 3 years — LOWER is better (a bloating set is
                      not health); shrinking set = full marks
-   Within-stat curve: points = 20 × clamp of (ratio − 0.5)/0.5 — at half
-   the 3-yr average → 0, at-or-above → full 20 (inverted metrics feed
-   the reciprocal ratio, so at-or-better-than-average = full 20). All
+   Within-stat curve v2 (task 22, Joe: at-average must NOT read as
+   perfect): half the 3-yr average or worse → 0, AT the average → 15,
+   full 20 only at 1.5× the average or better (inverted metrics feed
+   the reciprocal ratio, so "average = 15" holds for them too). All
    inputs are FEED-derived (averages anchored on the data's own dates,
    never the wall clock), so a stalled feed freezes its stat instead of
    drifting. Score = SUM of per-stat ROUNDED points; any missing input →
@@ -76,10 +77,15 @@
   /* same guard HULL.fmt applies: a real, usable number and nothing else */
   function bad(n) { return typeof n !== 'number' || !isFinite(n); }
 
-  /* the shared curve: half-of-average → 0, at-or-above average → 20 */
+  /* the shared curve v2 (task 22): half the 3-yr average or worse → 0;
+     AT the average → 15 of 20; the last 5 points are earned only by
+     EXCEEDING the average, saturating at 1.5× — so the headline can
+     read 100 only when every stat beats its own history with room. */
   function ratioPts(r) {
     if (bad(r)) return NaN;
-    return 20 * Math.min(1, Math.max(0, (r - 0.5) / 0.5));
+    if (r <= 0.5) return 0;
+    if (r <= 1) return 30 * (r - 0.5);
+    return Math.min(20, 15 + 10 * (r - 1));
   }
 
   /* y of the series point nearest targetX, NaN if none lands within tol */
@@ -170,8 +176,8 @@
      blocks (one epoch, tip-anchored via HULL.hist) vs the average
      per-epoch growth over the last 3 years — LOWER is better (a
      bloating set is not health). Shrinking set = full marks; growing
-     at the historical average = full marks fade begins; at 2× the
-     average pace = 0 (the shared curve on the reciprocal ratio). */
+     at the historical average = 15/20 (curve v2 on the reciprocal
+     ratio); at 2× the average pace = 0. */
   function compUtxo() {
     var s = store.get('utxoSeries');
     var vals = s && s.values;

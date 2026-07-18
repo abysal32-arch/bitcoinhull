@@ -216,6 +216,10 @@ tag (task-13 rule: as-of IS the honesty for baked data).
   better (shrinking set = full marks) — composition details in
   11-integrity.js's header. Title confirmed "Bitcoin's Hull Integrity"
   (compound noun, correct grammar — don't add a second possessive).
+- Task 22 curve v2: per-stat points are NOT a cliff — at the 3-yr
+  average = 15/20, full 20 only at 1.5× the average, ≤ half = 0
+  (reciprocal ratio for the two lower-is-better metrics). A 100
+  headline requires every stat to beat its own history with room.
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
