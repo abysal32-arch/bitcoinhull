@@ -42,7 +42,7 @@ body {
   font-size: 14px;
   line-height: 1.45;
   min-height: 100vh;
-  padding: 12px clamp(14px, 3vw, 32px) 24px;
+  padding: 6px clamp(14px, 3vw, 32px) 24px;
   max-width: 1360px;
   margin: 0 auto;
 }
@@ -56,11 +56,11 @@ body {
 
 .hull-header {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 2px 2px 10px;
+  padding: 0 2px 6px;
 }
 
 .wordmark {
@@ -72,9 +72,10 @@ body {
 }
 .wordmark b { color: var(--ink); font-weight: 700; }
 
-/* the brand ship sails to the RIGHT of the wordmark (task 20, Joe) */
-.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
-.brand-ship { width: 58px; height: 31px; flex: none; }
+/* the brand ship sails to the RIGHT of the wordmark (task 20, Joe;
+   upsized task 21 — "definitely bigger") */
+.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
+.brand-ship { width: 88px; height: 47px; flex: none; }
 
 .header-right {
   display: flex;
@@ -132,7 +133,7 @@ body {
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 8px;
+  gap: 6px;
 }
 
 .span-12 { grid-column: span 12; }
@@ -142,7 +143,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 7px 12px 8px;
+  padding: 5px 10px 6px;
   min-width: 0;
 }
 
@@ -151,7 +152,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 10px;
-  margin-bottom: 4px;
+  margin-bottom: 3px;
 }
 
 .panel-head h2 {
@@ -174,26 +175,26 @@ body {
   margin: 0;
 }
 .hero-num {
-  font-size: clamp(19px, 1.8vw, 24px);
+  font-size: clamp(17px, 1.55vw, 20px);
   font-weight: 650;
   letter-spacing: -0.01em;
   color: var(--ink);
 }
-.hero-unit { font-size: 11px; color: var(--ink-mut); font-weight: 500; }
-.hero-cur  { align-self: flex-start; margin-top: 4px; }
-.hero-sub  { font-size: 10.5px; color: var(--ink-mut); margin-bottom: 2px; }
+.hero-unit { font-size: 10.5px; color: var(--ink-mut); font-weight: 500; }
+.hero-cur  { align-self: flex-start; margin-top: 3px; }
+.hero-sub  { font-size: 10px; color: var(--ink-mut); margin-bottom: 0; }
 
 /* ---------------- label/value rows ---------------- */
 
-.rows { margin-top: 2px; }
+.rows { margin-top: 0; }
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
-  padding: 3px 0;
+  padding: 2px 0;
   border-top: 1px solid var(--border);
-  font-size: 11.5px;
+  font-size: 11px;
   color: var(--ink-2);
 }
 .row .val { color: var(--ink); font-weight: 600; white-space: nowrap; }
@@ -235,7 +236,7 @@ details.integrity { padding: 0; }
   align-items: center;
   flex-wrap: wrap; /* the note wraps to its own line under the bar */
   gap: 14px;
-  padding: 8px 14px;
+  padding: 6px 14px;
   cursor: pointer;
   list-style: none;
 }
@@ -308,39 +309,41 @@ details.integrity { padding: 0; }
   padding: 10px 18px 14px;
 }
 .integrity-blurb { font-size: 12.5px; color: var(--ink-mut); margin-bottom: 4px; }
+/* tiny polarity note beside a dropdown metric label (task 21) */
+.int-note { font-size: 10px; color: var(--ink-mut); margin-left: 4px; }
 
 /* ---------------- chain-tip block strip ---------------- */
 
 .block-strip {
   display: flex;
-  gap: 10px;
+  gap: 7px;
   overflow-x: auto;
-  padding-bottom: 4px;
+  padding-bottom: 2px;
   scrollbar-width: thin;
   scrollbar-color: var(--surface-2) transparent;
 }
 
 .block-tile {
-  flex: 1 0 106px;
-  min-width: 106px;
+  flex: 1 0 92px;
+  min-width: 92px;
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 7px 9px;
+  padding: 4px 7px;
 }
 
 .bt-height {
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 700;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
-  margin-bottom: 5px;
+  margin-bottom: 3px;
 }
-.bt-line { font-size: 11.5px; color: var(--ink-mut); line-height: 1.55; }
+.bt-line { font-size: 10.5px; color: var(--ink-mut); line-height: 1.5; }
 .bt-line .val { color: var(--ink-2); font-weight: 600; }
 .bt-age {
-  margin-top: 5px;
-  font-size: 11px;
+  margin-top: 3px;
+  font-size: 10px;
   color: var(--ink-mut);
 }
 
@@ -470,7 +473,7 @@ details.integrity { padding: 0; }
   body { padding: 14px 12px 20px; }
   .tip-num { font-size: 22px; }
   .panel-side { white-space: normal; text-align: right; }
-  .block-tile { flex: 0 0 106px; }
+  .block-tile { flex: 0 0 92px; }
   .integrity summary { flex-wrap: wrap; gap: 10px; }
   .integrity-bar { flex-basis: 100%; order: 5; }
 }

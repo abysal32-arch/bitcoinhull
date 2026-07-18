@@ -208,6 +208,14 @@ tag (task-13 rule: as-of IS the honesty for baked data).
   "daily estimate" credit + the monthly re-bake sitting. This overrides
   the task-13 "as-of line IS the honesty" rule for THIS panel only —
   any future bake still shows its date unless Joe says otherwise.
+- Task 21 (Joe, 2026-07-18): the FIT BAR is now the WHOLE page — 12
+  panels + the chain-tip strip ≤ 940 px at 1280 wide (measured 938).
+  Integrity dropdown shows per-metric "now · 3-yr avg" values and must
+  NOT state the 20-pt weights (they stay under the hood). UTXO metric
+  = trailing-2016-block growth vs 3-yr per-epoch average, LOWER is
+  better (shrinking set = full marks) — composition details in
+  11-integrity.js's header. Title confirmed "Bitcoin's Hull Integrity"
+  (compound noun, correct grammar — don't add a second possessive).
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
