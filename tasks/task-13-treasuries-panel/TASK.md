@@ -1,5 +1,12 @@
 # Task 13 — Treasuries panel (v1.1): baked bitcointreasuries snapshot
 
+> **SHIPPED 2026-07-17 as a MINOR card** (Joe's same-day tier spec supersedes
+> the panel shape below): hero = baked public-companies total BTC, rows =
+> live USD value + live share-of-supply, as-of + permanent credit. The
+> corp/ETF split, entity count and top-holder rows were DROPPED (Joe listed
+> exactly three stats). Baked value lives in `js/data/treasuries.js`; the
+> monthly refresh procedure below still applies verbatim.
+
 **v1.1 — do not start before task 10 ships.** Sanctioned by Joe 2026-07-16.
 
 ## Goal

@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Bitcoinhull</title>
-<meta name="description" content="Bitcoinhull — a live Bitcoin command point: chain, fees, mempool, price, mining, supply, halving.">
+<meta name="description" content="Bitcoinhull — a live Bitcoin command point: chain, fees, mempool, price, mining, supply, halving, nodes.">
 <link rel="icon" href="data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2064%2064'%3E%3Crect%20width='64'%20height='64'%20rx='12'%20fill='%230b0e13'/%3E%3Ctext%20x='32'%20y='44'%20font-size='28'%20font-family='sans-serif'%20font-weight='700'%20text-anchor='middle'%20fill='%23f7931a'%3EBH%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="css/style.css">
 </head>
@@ -23,29 +23,193 @@
   <!-- BITCOINHULL INTEGRITY -->
   <details class="panel span-12 integrity" id="panel-integrity">
     <summary class="integrity-row">
-      <h2 class="integrity-title">BitcoinHull Integrity</h2>
+      <h2 class="integrity-title">Bitcoin's Hull Integrity</h2>
       <span class="stale-tag" data-integrity-stale hidden>STALE</span>
       <span class="pill pill-good" data-integrity-verdict><span class="dot"></span><span data-integrity-verdict-label>SOLID</span></span>
       <span class="bar integrity-bar"><span class="bar-fill" data-integrity-bar style="width:92%"></span></span>
-      <span class="integrity-score"><span class="val" data-integrity-score>92</span><span class="integrity-outof">/100</span></span>
+      <span class="integrity-score"><span class="val" data-integrity-score>—</span><span class="integrity-outof">/100</span></span>
       <span class="integrity-caret" aria-hidden="true">▾</span>
+      <span class="integrity-note">The hull — the body's health of the Bitcoin network. Five structural stats, 20% each, every one scored against its own three-year average.</span>
     </summary>
     <div class="integrity-detail">
-      <p class="integrity-blurb">One number for "is the network running clean right now" —
-        five live signals scored against protocol norms: block cadence /25, mining muscle /25,
-        fee pressure /20, mempool congestion /20, feed freshness /10. Recomputed as data lands;
-        the rows below always sum to the headline.</p>
+      <p class="integrity-blurb">Each stat compares NOW against its own three-year average:
+        at or above the average scores the full 20, at half the average it scores 0, linear
+        between (sats per dollar runs inverted — lower is better). All five inputs are feed
+        data anchored on their own dates, so a stalled feed freezes its stat rather than
+        letting it drift. The rows below always sum to the headline.</p>
       <div class="rows">
-        <div class="row"><span>Block cadence — time since last block vs the 10 min target</span><span class="val" data-int-cadence>24/25</span></div>
-        <div class="row"><span>Mining muscle — hashrate vs difficulty baseline</span><span class="val" data-int-mining>24/25</span></div>
-        <div class="row"><span>Fee pressure — cost to clear into the next block</span><span class="val" data-int-fees>18/20</span></div>
-        <div class="row"><span>Mempool congestion — backlog depth in blocks</span><span class="val" data-int-mempool>17/20</span></div>
-        <div class="row"><span>Feed freshness — is this page's data current</span><span class="val" data-int-fresh>9/10</span></div>
+        <div class="row"><span>Nodes — est. total vs 3-yr avg <span class="int-cmp" data-int-nodes-cmp></span></span><span class="val" data-int-nodes>—</span></div>
+        <div class="row"><span>Hash power — current vs 3-yr avg <span class="int-cmp" data-int-hash-cmp></span></span><span class="val" data-int-hash>—</span></div>
+        <div class="row"><span>Transactions per day — vs 3-yr avg <span class="int-cmp" data-int-tx-cmp></span></span><span class="val" data-int-tx>—</span></div>
+        <div class="row"><span>Sats per dollar — vs 3-yr avg, lower is better <span class="int-cmp" data-int-sats-cmp></span></span><span class="val" data-int-sats>—</span></div>
+        <div class="row"><span>UTXO-set growth — past year vs 3-yr avg <span class="int-cmp" data-int-utxo-cmp></span></span><span class="val" data-int-utxo>—</span></div>
       </div>
     </div>
   </details>
 
-  <!-- CHAIN TIP -->
+  <!-- FEES -->
+  <section class="panel span-4" id="panel-fees">
+    <div class="panel-head">
+      <h2>Fees <span class="stale-tag" data-fees-stale hidden>STALE</span></h2>
+      <span class="pill pill-plain" data-fee-verdict><span class="dot"></span><span data-fee-verdict-label>—</span></span>
+    </div>
+    <div class="metric-hero"><span class="hero-num" data-fee-fast>—</span><span class="hero-unit">sat/vB</span></div>
+    <div class="hero-sub" data-fee-sub>—</div>
+    <div class="rows">
+      <div class="row"><span>30 min</span><span class="val"><span data-fee-half>—</span> sat/vB</span></div>
+      <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>—</span> sat/vB</span></div>
+      <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>—</span> sat/vB</span></div>
+      <div class="row"><span>Floor</span><span class="val"><span data-fee-min>—</span> sat/vB</span></div>
+    </div>
+  </section>
+
+  <!-- MEMPOOL -->
+  <section class="panel span-4" id="panel-mempool">
+    <div class="panel-head">
+      <h2>Mempool <span class="stale-tag" data-mempool-stale hidden>STALE</span></h2>
+    </div>
+    <div class="metric-hero"><span class="hero-num" data-mempool-vsize>—</span><span class="hero-unit">vMB</span></div>
+    <div class="mini-viz" data-mempool-viz role="img" aria-label="projected next blocks by size"></div>
+    <div class="viz-caption">projected next blocks · median sat/vB</div>
+    <div class="rows">
+      <div class="row"><span>Pending</span><span class="val"><span data-mempool-count>—</span> tx</span></div>
+      <div class="row"><span>Blocks to clear</span><span class="val" data-mempool-depth>—</span></div>
+    </div>
+  </section>
+
+  <!-- PRICE -->
+  <section class="panel span-4" id="panel-price">
+    <div class="panel-head"><h2>Price <span class="stale-tag" data-price-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-unit hero-cur">$</span><span class="hero-num" data-price-usd>118,420</span></div>
+    <div class="hero-sub">mempool.space spot</div>
+    <div class="rows">
+      <div class="row"><span>Sats per dollar</span><span class="val"><span data-price-sats>845</span> sats</span></div>
+      <div class="row"><span>Market cap</span><span class="val" data-price-mcap>$2.37 T</span></div>
+    </div>
+  </section>
+
+  <!-- MINING (reworked task 15 — retarget rows moved to their own panel) -->
+  <section class="panel span-4" id="panel-mining">
+    <div class="panel-head"><h2>Mining <span class="stale-tag" data-mining-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-mining-hashrate>—</span><span class="hero-unit">EH/s</span></div>
+    <div class="hero-sub">network hashrate</div>
+    <div class="rows">
+      <div class="row"><span>Difficulty</span><span class="val" data-mining-diff>—</span></div>
+      <div class="row"><span>Hash rate (2016 blocks)</span><span class="val"><span data-mining-hr2016>—</span> EH/s</span></div>
+      <div class="row"><span>Last adjustment</span><span class="val" data-mining-lastadj>—</span></div>
+      <div class="row"><span>Block time (2016 blocks)</span><span class="val" data-mining-bt2016>—</span></div>
+    </div>
+  </section>
+
+  <!-- DIFFICULTY RETARGET (task 15) -->
+  <section class="panel span-4" id="panel-retarget">
+    <div class="panel-head"><h2>Difficulty retarget <span class="stale-tag" data-retarget-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-retarget-blocks>—</span><span class="hero-unit">blocks</span></div>
+    <div class="hero-sub">until difficulty retargets</div>
+    <div class="rows">
+      <div class="row"><span>Retarget date</span><span class="val" data-retarget-date>—</span></div>
+      <div class="row"><span>Est. change</span><span class="val" data-retarget-est>—</span></div>
+      <div class="row"><span>Block time (this epoch)</span><span class="val" data-retarget-bt>—</span></div>
+      <div class="row row-bar">
+        <span>Epoch <span data-retarget-epoch>—</span></span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-retarget-bar style="width:0%"></span></span><span class="val" data-retarget-pct>—</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- CHAIN SECURITY (task 15) -->
+  <section class="panel span-4" id="panel-security">
+    <div class="panel-head"><h2>Chain security <span class="stale-tag" data-security-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-security-hr90>—</span><span class="hero-unit">EH/s</span></div>
+    <div class="hero-sub">hashrate, 90-day average</div>
+    <div class="rows">
+      <div class="row"><span>Chain work</span><span class="val" data-security-work>—</span></div>
+      <div class="row"><span>Chain rewrite days</span><span class="val" data-security-rewrite>—</span></div>
+      <div class="row"><span>Annual mining revenue</span><span class="val" data-security-revenue>—</span></div>
+    </div>
+  </section>
+
+  <!-- SUPPLY -->
+  <section class="panel span-4" id="panel-supply">
+    <div class="panel-head"><h2>Supply <span class="stale-tag" data-supply-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
+    <div class="hero-sub">issued of 21,000,000</div>
+    <div class="rows">
+      <div class="row row-bar">
+        <span>Issued</span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-supply-bar style="width:95.45%"></span></span><span class="val" data-supply-pct>95.45%</span></span>
+      </div>
+      <div class="row"><span>Block subsidy</span><span class="val"><span data-supply-subsidy>3.125</span> BTC</span></div>
+      <div class="row"><span>Annual inflation</span><span class="val" data-supply-inflation>0.82%</span></div>
+    </div>
+  </section>
+
+  <!-- HALVING -->
+  <section class="panel span-4" id="panel-halving">
+    <div class="panel-head"><h2>Halving <span class="stale-tag" data-halving-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-halving-blocks>95,679</span><span class="hero-unit">blocks</span></div>
+    <div class="hero-sub">until subsidy halves</div>
+    <div class="rows">
+      <div class="row"><span>Estimated</span><span class="val" data-halving-date>≈ May 2028</span></div>
+      <div class="row"><span>Next subsidy</span><span class="val"><span data-halving-next>1.5625</span> BTC</span></div>
+      <div class="row row-bar">
+        <span>Era <span data-halving-era>5</span></span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-halving-erabar style="width:54.4%"></span></span><span class="val" data-halving-erapct>54.4%</span></span>
+      </div>
+    </div>
+  </section>
+
+  <!-- BLOCKCHAIN (task 15) -->
+  <section class="panel span-4" id="panel-blockchain">
+    <div class="panel-head"><h2>Blockchain <span class="stale-tag" data-blockchain-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-blockchain-utxo>—</span><span class="hero-unit">UTXOs</span></div>
+    <div class="hero-sub">unspent transaction outputs</div>
+    <div class="rows">
+      <div class="row"><span>Chain size</span><span class="val" data-blockchain-size>—</span></div>
+      <div class="row"><span>OP_RETURN data <span class="asof" data-blockchain-opreturn-asof></span></span><span class="val" data-blockchain-opreturn>—</span></div>
+      <div class="row"><span>Block time (prior year)</span><span class="val" data-blockchain-btyear>—</span></div>
+    </div>
+  </section>
+
+  <!-- NODES (task 12 — v1.1) -->
+  <section class="panel span-4" id="panel-nodes">
+    <div class="panel-head"><h2>Nodes <span class="stale-tag" data-nodes-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-nodes-total>—</span><span class="hero-unit">est. nodes</span></div>
+    <div class="hero-sub">listening + extrapolated non-listening<span class="asof" data-nodes-asof></span></div>
+    <div class="rows">
+      <div class="row"><span>Listening (reachable)</span><span class="val" data-nodes-listening>—</span></div>
+      <div class="row"><span>30-day change</span><span class="val" data-nodes-trend>—</span></div>
+    </div>
+    <!-- permanent credit, Clark-style (task 12) — never remove -->
+    <div class="panel-credit">data: <a href="https://luke.dashjr.org/programs/bitcoin/files/charts/historical.html" target="_blank" rel="noopener">luke.dashjr.org</a> · daily estimate</div>
+  </section>
+
+  <!-- MINOR STATS (task 15 — 2/3-scale tier per Joe, 2026-07-17) -->
+  <section class="panel span-4 panel-minor" id="panel-treasuries">
+    <div class="panel-head"><h2>Corporate treasuries <span class="stale-tag" data-treasuries-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-treasuries-btc>—</span><span class="hero-unit">BTC</span></div>
+    <div class="hero-sub">held by public companies · as of <span data-treasuries-asof>—</span></div>
+    <div class="rows">
+      <div class="row"><span>Value</span><span class="val" data-treasuries-value>—</span></div>
+      <div class="row"><span>Share of supply</span><span class="val" data-treasuries-pct>—</span></div>
+    </div>
+    <!-- permanent credit, Clark-style (task 13) — never remove -->
+    <div class="panel-credit">data: <a href="https://bitcointreasuries.net" target="_blank" rel="noopener">bitcointreasuries.net</a> · baked monthly</div>
+  </section>
+
+  <section class="panel span-4 panel-minor" id="panel-lightning">
+    <div class="panel-head"><h2>Lightning (public) <span class="stale-tag" data-lightning-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-lightning-cap>—</span><span class="hero-unit">BTC</span></div>
+    <div class="hero-sub">total public capacity · snapshot <span data-lightning-asof>—</span></div>
+    <div class="rows">
+      <div class="row"><span>Capacity value</span><span class="val" data-lightning-capusd>—</span></div>
+      <div class="row"><span>Nodes</span><span class="val" data-lightning-nodes>—</span></div>
+      <div class="row"><span>Channels</span><span class="val" data-lightning-channels>—</span></div>
+      <div class="row"><span>Tor nodes</span><span class="val" data-lightning-tor>—</span></div>
+    </div>
+  </section>
+
+  <!-- CHAIN TIP (moved below the stat grid per Joe, 2026-07-17) -->
   <section class="panel span-12" id="panel-chain">
     <div class="panel-head">
       <h2>Chain tip <span class="stale-tag" data-chain-stale hidden>STALE</span></h2>
@@ -104,93 +268,6 @@
     </div>
   </section>
 
-  <!-- FEES -->
-  <section class="panel span-4" id="panel-fees">
-    <div class="panel-head">
-      <h2>Fees <span class="stale-tag" data-fees-stale hidden>STALE</span></h2>
-      <span class="pill pill-plain" data-fee-verdict><span class="dot"></span><span data-fee-verdict-label>—</span></span>
-    </div>
-    <div class="metric-hero"><span class="hero-num" data-fee-fast>—</span><span class="hero-unit">sat/vB</span></div>
-    <div class="hero-sub" data-fee-sub>—</div>
-    <div class="rows">
-      <div class="row"><span>30 min</span><span class="val"><span data-fee-half>—</span> sat/vB</span></div>
-      <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>—</span> sat/vB</span></div>
-      <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>—</span> sat/vB</span></div>
-      <div class="row"><span>Floor</span><span class="val"><span data-fee-min>—</span> sat/vB</span></div>
-    </div>
-  </section>
-
-  <!-- MEMPOOL -->
-  <section class="panel span-4" id="panel-mempool">
-    <div class="panel-head">
-      <h2>Mempool <span class="stale-tag" data-mempool-stale hidden>STALE</span></h2>
-    </div>
-    <div class="metric-hero"><span class="hero-num" data-mempool-vsize>—</span><span class="hero-unit">vMB</span></div>
-    <div class="mini-viz" data-mempool-viz role="img" aria-label="projected next blocks by size"></div>
-    <div class="viz-caption">projected next blocks · median sat/vB</div>
-    <div class="rows">
-      <div class="row"><span>Pending</span><span class="val"><span data-mempool-count>—</span> tx</span></div>
-      <div class="row"><span>Blocks to clear</span><span class="val" data-mempool-depth>—</span></div>
-    </div>
-  </section>
-
-  <!-- PRICE -->
-  <section class="panel span-4" id="panel-price">
-    <div class="panel-head"><h2>Price <span class="stale-tag" data-price-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-unit hero-cur">$</span><span class="hero-num" data-price-usd>118,420</span></div>
-    <div class="hero-sub">mempool.space spot</div>
-    <div class="rows">
-      <div class="row"><span>Sats per dollar</span><span class="val"><span data-price-sats>845</span> sats</span></div>
-      <div class="row"><span>Market cap</span><span class="val" data-price-mcap>$2.37 T</span></div>
-    </div>
-  </section>
-
-  <!-- MINING -->
-  <section class="panel span-4" id="panel-mining">
-    <div class="panel-head"><h2>Mining <span class="stale-tag" data-mining-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-num" data-mining-hashrate>912</span><span class="hero-unit">EH/s</span></div>
-    <div class="hero-sub">network hashrate</div>
-    <div class="rows">
-      <div class="row"><span>Difficulty</span><span class="val" data-mining-diff>127.4 T</span></div>
-      <div class="row"><span>Est. adjustment</span><span class="val" data-mining-adj>+2.1%</span></div>
-      <div class="row"><span>Retarget</span><span class="val" data-mining-retarget>1,263 blocks · ≈ 8.8 d</span></div>
-      <div class="row row-bar">
-        <span>Epoch</span>
-        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-mining-epochbar style="width:37.4%"></span></span><span class="val" data-mining-epochpct>37.4%</span></span>
-      </div>
-    </div>
-  </section>
-
-  <!-- SUPPLY -->
-  <section class="panel span-4" id="panel-supply">
-    <div class="panel-head"><h2>Supply <span class="stale-tag" data-supply-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
-    <div class="hero-sub">issued of 21,000,000</div>
-    <div class="rows">
-      <div class="row row-bar">
-        <span>Issued</span>
-        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-supply-bar style="width:95.45%"></span></span><span class="val" data-supply-pct>95.45%</span></span>
-      </div>
-      <div class="row"><span>Block subsidy</span><span class="val"><span data-supply-subsidy>3.125</span> BTC</span></div>
-      <div class="row"><span>Annual inflation</span><span class="val" data-supply-inflation>0.82%</span></div>
-    </div>
-  </section>
-
-  <!-- HALVING -->
-  <section class="panel span-4" id="panel-halving">
-    <div class="panel-head"><h2>Halving <span class="stale-tag" data-halving-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-num" data-halving-blocks>95,679</span><span class="hero-unit">blocks</span></div>
-    <div class="hero-sub">until subsidy halves</div>
-    <div class="rows">
-      <div class="row"><span>Estimated</span><span class="val" data-halving-date>≈ May 2028</span></div>
-      <div class="row"><span>Next subsidy</span><span class="val"><span data-halving-next>1.5625</span> BTC</span></div>
-      <div class="row row-bar">
-        <span>Era <span data-halving-era>5</span></span>
-        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-halving-erabar style="width:54.4%"></span></span><span class="val" data-halving-erapct>54.4%</span></span>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer class="hull-footer">
@@ -202,6 +279,10 @@
 <script src="js/format.js"></script>
 <script src="js/supply.js"></script>
 <script src="js/store.js"></script>
+<script src="js/hist.js"></script>
+<script src="js/data/treasuries.js"></script>
+<script src="js/data/opreturn.js"></script>
+<script src="js/data/nodes.js"></script>
 <script src="js/api.js"></script>
 <script src="js/live.js"></script>
 <script src="js/panels/03-chain.js"></script>
@@ -211,6 +292,12 @@
 <script src="js/panels/07-mining.js"></script>
 <script src="js/panels/08-supply.js"></script>
 <script src="js/panels/11-integrity.js"></script>
+<script src="js/panels/12-nodes.js"></script>
+<script src="js/panels/13-treasuries.js"></script>
+<script src="js/panels/15-retarget.js"></script>
+<script src="js/panels/15-security.js"></script>
+<script src="js/panels/15-blockchain.js"></script>
+<script src="js/panels/15-lightning.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

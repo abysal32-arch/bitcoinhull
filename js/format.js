@@ -125,6 +125,51 @@
     diffT: function (d) {
       if (bad(d)) return DASH;
       return strip((d / 1e12).toFixed(1)) + ' T';
+    },
+
+    /* seconds -> "10:01" (block-interval clock face; Clark-style) */
+    mmss: function (secs) {
+      if (bad(secs)) return DASH;
+      var s = Math.max(0, Math.round(secs));
+      var m = Math.floor(s / 60), r = s % 60;
+      return m + ':' + (r < 10 ? '0' : '') + r;
+    },
+
+    /* unix MILLISECONDS -> "July 26, 2026" (retarget-date precision is
+       day-scale honest, unlike the multi-year halving ETA) */
+    dateLong: function (ms) {
+      if (bad(ms)) return DASH;
+      return new Intl.DateTimeFormat('en-US',
+        { month: 'long', day: 'numeric', year: 'numeric' }).format(new Date(ms));
+    },
+
+    /* big USD with 1dp unit: 145.4e9 -> "$145.4B" · 273.7e6 -> "$273.7M" */
+    usdBig: function (n) {
+      if (bad(n)) return DASH;
+      var units = [[1e12, 'T'], [1e9, 'B'], [1e6, 'M']];
+      for (var i = 0; i < units.length; i++) {
+        if (n >= units[i][0]) return '$' + strip((n / units[i][0]).toFixed(1)) + units[i][1];
+      }
+      return '$' + intFmt.format(Math.round(n));
+    },
+
+    /* BTC to 2dp: 4788.78771889 -> "4,788.79" (fmt.btc keeps all 8 decimals) */
+    btc2: function (n) {
+      if (bad(n)) return DASH;
+      return new Intl.NumberFormat('en-US',
+        { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(n);
+    },
+
+    /* gigabytes (already GB) -> "860.3 GB" · "0.4 GB" */
+    gb: function (n) {
+      if (bad(n)) return DASH;
+      return strip(n.toFixed(1)) + ' GB';
+    },
+
+    /* chain work log2 -> "96.2 bits" */
+    bits: function (n) {
+      if (bad(n)) return DASH;
+      return strip(n.toFixed(1)) + ' bits';
     }
   };
 })();

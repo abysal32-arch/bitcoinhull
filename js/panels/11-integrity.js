@@ -1,24 +1,20 @@
-/* Bitcoin Hull — BitcoinHull Integrity: the Hull's signature stat. One
-   honest 0–100 for "is the network running clean right now", derived
-   client-side from data already in HULL.store — no new endpoints.
-   Weighted sum, each component scored against protocol norms (weights
-   confirmed by Joe at task-11 start):
-     block cadence      /25  minutes since last block AND the kept-window
-                             average interval vs the 10 min target — full
-                             ≤10 min, zero ≥60 min, the worse one wins
-     mining muscle      /25  hashrate vs the difficulty-implied baseline
-                             (difficulty × 2³² / 600) — full at ratio ≥1,
-                             scales down as hashrate lags difficulty
-     fee pressure       /20  fastestFee on a log band: ≤5 sat/vB full,
-                             zero at ≥300
-     mempool congestion /20  blocks-to-clear (vsize/1e6): ≤3 full, zero ≥50
-     feed freshness     /10  this page's own pipeline, scaled by stale
-                             endpoint count; conn=down → 0 (an unmeasured
-                             network can't claim a score)
-   The score is the SUM OF THE ROUNDED rows, so the breakdown always adds
-   up to the headline. Any missing input → that row AND the score render
-   the dash (no fabricated totals). Renders from HULL.store only; a 30 s
-   tick keeps the since-block clock and staleness honest between events. */
+/* Bitcoin Hull — Bitcoin's Hull Integrity (recomposed per Joe 2026-07-17):
+   the hull = the BODY's health of the Bitcoin network. Five structural
+   stats, 20 points each, every one scored as CURRENT vs its own 3-YEAR
+   AVERAGE:
+     nodes      /20  Luke-estimate total vs 3-yr avg of the same series
+     hashpower  /20  live hashrate vs 3-yr avg (mempool.space 3y series)
+     tx/day     /20  newest daily tx count vs 3-yr avg (blockchain.info)
+     sats per $ /20  LOWER is better (Joe) — ratio inverted
+     UTXO growth/20  past-year growth vs the mean of the 3 prior yearly
+                     growth rates (4-yr series)
+   Within-stat curve (default Joe may retune): points = 20 × clamp of
+   (ratio − 0.5)/0.5 — at half the 3-yr average → 0, at-or-above the
+   average → full 20. All inputs are FEED-derived (averages anchored on
+   the data's own dates, never the wall clock), so a stalled feed freezes
+   its stat instead of drifting. The score is the SUM OF THE ROUNDED rows
+   so the breakdown always adds up; any missing input → that row AND the
+   headline dash (no fabricated totals). */
 (function () {
   'use strict';
 
@@ -27,6 +23,7 @@
 
   var DASH = '—';
   var TICK_MS = 30000;
+  var YEAR_S = 31536000;
 
   /* verdict bands on the integer score — label + tint always travel
      together, and pill + bar always carry the text label (house rule) */
@@ -37,26 +34,17 @@
     { min: 0,  label: 'BREACHED', cls: 'pill-critical', fill: 'fill-critical' }
   ];
 
-  /* the whole REST pipeline (table intervals, _SHARED.md) — the freshness
-     component meters ALL of it, not just this panel's own score inputs */
-  var PIPELINE = [
-    { key: 'tipHeight',     intervalS: 60 },
-    { key: 'blocks',        intervalS: 60 },
-    { key: 'fees',          intervalS: 30 },
-    { key: 'mempool',       intervalS: 30 },
-    { key: 'mempoolBlocks', intervalS: 30 },
-    { key: 'prices',        intervalS: 60 },
-    { key: 'difficulty',    intervalS: 300 },
-    { key: 'hashrate',      intervalS: 300 }
-  ];
-
-  /* feeds the score inputs render from — the stale tag judges these; the
-     freshness row is a meter OF staleness, so it can't itself go stale */
+  /* the strip's stale tag judges FETCH health of its inputs (2× interval
+     convention); each stat's own freeze-when-stalled honesty rides on the
+     values being feed-derived */
   var FEEDS = [
-    { key: 'blocks',   intervalS: 60 },
-    { key: 'fees',     intervalS: 30 },
-    { key: 'mempool',  intervalS: 30 },
-    { key: 'hashrate', intervalS: 300 }
+    { key: 'nodes',       intervalS: 21600 },
+    { key: 'hashrate',    intervalS: 300 },
+    { key: 'hashrate3y',  intervalS: 21600 },
+    { key: 'prices',      intervalS: 60 },
+    { key: 'priceSeries', intervalS: 21600 },
+    { key: 'txSeries',    intervalS: 21600 },
+    { key: 'utxoSeries',  intervalS: 21600 }
   ];
 
   var panel = document.getElementById('panel-integrity');
@@ -66,11 +54,11 @@
   var verdictEl = panel.querySelector('[data-integrity-verdict]');
   var verdictLabel = panel.querySelector('[data-integrity-verdict-label]');
   var rowEls = {
-    cadence: panel.querySelector('[data-int-cadence]'),
-    mining:  panel.querySelector('[data-int-mining]'),
-    fees:    panel.querySelector('[data-int-fees]'),
-    mempool: panel.querySelector('[data-int-mempool]'),
-    fresh:   panel.querySelector('[data-int-fresh]')
+    nodes: { val: panel.querySelector('[data-int-nodes]'), cmp: panel.querySelector('[data-int-nodes-cmp]') },
+    hash:  { val: panel.querySelector('[data-int-hash]'),  cmp: panel.querySelector('[data-int-hash-cmp]') },
+    tx:    { val: panel.querySelector('[data-int-tx]'),    cmp: panel.querySelector('[data-int-tx-cmp]') },
+    sats:  { val: panel.querySelector('[data-int-sats]'),  cmp: panel.querySelector('[data-int-sats-cmp]') },
+    utxo:  { val: panel.querySelector('[data-int-utxo]'),  cmp: panel.querySelector('[data-int-utxo-cmp]') }
   };
 
   function setVal(el, text) {
@@ -81,83 +69,112 @@
   /* same guard HULL.fmt applies: a real, usable number and nothing else */
   function bad(n) { return typeof n !== 'number' || !isFinite(n); }
 
-  /* 1 at or under lo, 0 at or over hi, linear between */
-  function ramp(v, lo, hi) {
-    if (v <= lo) return 1;
-    if (v >= hi) return 0;
-    return (hi - v) / (hi - lo);
+  /* the shared curve: half-of-average → 0, at-or-above average → 20 */
+  function ratioPts(r) {
+    if (bad(r)) return NaN;
+    return 20 * Math.min(1, Math.max(0, (r - 0.5) / 0.5));
   }
 
-  var lastCadence = NaN; /* kept-value cache — see the stale guard below */
-
-  /* /25 — slow cadence is the danger signal; fast blocks are a healthy
-     hashrate surge, so an under-target average scores full, not weird */
-  function compCadence() {
-    /* while the blocks feed is stale the since-clock would keep decaying
-       this row, misattributing a MEASUREMENT gap to network cadence — the
-       contract says last values kept, and the freshness component already
-       meters the outage. Never-fetched age is Infinity → NaN → loading. */
-    if (store.age('blocks') > 2 * 60) return lastCadence;
-    var blocks = store.get('blocks');
-    if (!blocks || !blocks.length || !blocks[0] || bad(blocks[0].timestamp)) return NaN;
-    var sinceMin = Math.max(0, Date.now() / 1000 - blocks[0].timestamp) / 60;
-    var s = ramp(sinceMin, 10, 60);
-    /* the average over the kept window (15 blocks = 14 intervals) catches
-       a slow-motion stall the since-clock alone would forgive; clamped at
-       0 because miner timestamps aren't monotonic */
-    var n = Math.min(blocks.length, 15);
-    if (n >= 2 && blocks[n - 1] && !bad(blocks[n - 1].timestamp)) {
-      var avgMin = Math.max(0, blocks[0].timestamp - blocks[n - 1].timestamp) / (n - 1) / 60;
-      var a = ramp(avgMin, 10, 60);
-      if (a < s) s = a; /* the worse signal wins */
+  /* y of the series point nearest targetX, NaN if none lands within tol */
+  function seriesAt(vals, targetX, tolS) {
+    var best = NaN, bestD = Infinity;
+    for (var i = 0; i < vals.length; i++) {
+      var p = vals[i];
+      if (!p || bad(p.x) || bad(p.y)) continue;
+      var d = Math.abs(p.x - targetX);
+      if (d < bestD) { bestD = d; best = p.y; }
     }
-    lastCadence = 25 * s;
-    return lastCadence;
+    return bestD <= tolS ? best : NaN;
   }
 
-  /* /25 — both fields ride the same payload, so one bad field means the
-     ratio isn't trustworthy */
-  function compMining() {
-    var hr = store.get('hashrate') || {};
-    if (bad(hr.currentHashrate) || hr.currentHashrate < 0 ||
-        bad(hr.currentDifficulty) || hr.currentDifficulty <= 0) return NaN;
-    var baseline = hr.currentDifficulty * Math.pow(2, 32) / 600;
-    return 25 * Math.min(1, Math.max(0, hr.currentHashrate / baseline));
-  }
-
-  /* /20 — log band: fee pain is multiplicative (5→50 hurts like 50→500) */
-  function compFees() {
-    var f = (store.get('fees') || {}).fastestFee;
-    if (bad(f) || f <= 0) return NaN;
-    return 20 * ramp(Math.log(f), Math.log(5), Math.log(300));
-  }
-
-  /* /20 — backlog depth in blocks-to-clear */
-  function compMempool() {
-    var v = (store.get('mempool') || {}).vsize;
-    if (bad(v) || v < 0) return NaN;
-    return 20 * ramp(v / 1e6, 3, 50);
-  }
-
-  /* /10 — judged at the panels' table-interval convention (2×); while the
-     socket is healthy its pushes keep the stretched keys' store age near
-     zero, so this stays truthful under the ×5 REST cadence too.
-     Never-fetched is the loading state, not stale — boot doesn't start
-     at 0/10, and until ANYTHING has ever landed the row is loading, not
-     a 10/10 claim on zero bytes. Computable once any data exists, and by
-     then some other row exists too, so this alone never dashes a score. */
-  function compFresh() {
-    var stale = 0, everMeasured = false;
-    for (var i = 0; i < PIPELINE.length; i++) {
-      var age = store.age(PIPELINE[i].key);
-      if (isFinite(age)) {
-        everMeasured = true;
-        if (age > 2 * PIPELINE[i].intervalS) stale += 1;
-      }
+  /* {pts, cmp} for a healthy stat, or null while an input is missing */
+  function compNodes() {
+    var v = store.get('nodes');
+    if (!v || bad(v.total) || !v.rows || v.rows.length < 90) return null;
+    var from = v.ts - 3 * YEAR_S;
+    var sum = 0, n = 0;
+    for (var i = 0; i < v.rows.length; i++) {
+      var r = v.rows[i];
+      if (r && !bad(r.total) && r.ts >= from) { sum += r.total; n += 1; }
     }
-    if (!everMeasured) return NaN;
-    if (store.get('conn') === 'down') return 0; /* an unmeasured network can't claim a score */
-    return 10 * (1 - stale / PIPELINE.length);
+    if (n < 90) return null;
+    var avg = sum / n;
+    return avg > 0 ? { pts: ratioPts(v.total / avg),
+                       cmp: fmt.int(v.total) + ' vs ' + fmt.int(avg) + ' avg' } : null;
+  }
+
+  function compHash() {
+    var hr = (store.get('hashrate') || {}).currentHashrate;
+    var h3y = store.get('hashrate3y');
+    var series = h3y && h3y.hashrates;
+    if (bad(hr) || hr < 0 || !series || series.length < 300) return null;
+    var sum = 0, n = 0;
+    for (var i = 0; i < series.length; i++) {
+      var p = series[i];
+      if (p && !bad(p.avgHashrate)) { sum += p.avgHashrate; n += 1; }
+    }
+    if (n < 300) return null;
+    var avg = sum / n;
+    return avg > 0 ? { pts: ratioPts(hr / avg),
+                       cmp: fmt.ehs(hr) + ' vs ' + fmt.ehs(avg) + ' EH/s avg' } : null;
+  }
+
+  function compTx() {
+    var s = store.get('txSeries');
+    var vals = s && s.values;
+    if (!vals || vals.length < 100) return null;
+    var cur = vals[vals.length - 1] && vals[vals.length - 1].y;
+    if (bad(cur)) return null;
+    var sum = 0, n = 0;
+    for (var i = 0; i < vals.length; i++) {
+      if (vals[i] && !bad(vals[i].y)) { sum += vals[i].y; n += 1; }
+    }
+    if (n < 100) return null;
+    var avg = sum / n;
+    return avg > 0 ? { pts: ratioPts(cur / avg),
+                       cmp: fmt.int(cur) + ' vs ' + fmt.int(avg) + ' avg' } : null;
+  }
+
+  /* LOWER is better (Joe): sats/$ falls as price rises — invert the ratio */
+  function compSats() {
+    var usd = (store.get('prices') || {}).USD;
+    var s = store.get('priceSeries');
+    var vals = s && s.values;
+    if (bad(usd) || usd <= 0 || !vals || vals.length < 100) return null;
+    var cur = 1e8 / usd;
+    var sum = 0, n = 0;
+    for (var i = 0; i < vals.length; i++) {
+      var p = vals[i];
+      if (p && !bad(p.y) && p.y > 0) { sum += 1e8 / p.y; n += 1; }
+    }
+    if (n < 100) return null;
+    var avg = sum / n;
+    return cur > 0 ? { pts: ratioPts(avg / cur),
+                       cmp: fmt.int(cur) + ' vs ' + fmt.int(avg) + ' sats avg' } : null;
+  }
+
+  /* past-year growth vs the mean of the 3 PRIOR yearly growth rates */
+  function compUtxo() {
+    var s = store.get('utxoSeries');
+    var vals = s && s.values;
+    if (!vals || vals.length < 100) return null;
+    var lastP = vals[vals.length - 1];
+    if (!lastP || bad(lastP.x) || bad(lastP.y)) return null;
+    var TOL = 45 * 86400;
+    var y = [lastP.y];
+    for (var k = 1; k <= 4; k++) y.push(seriesAt(vals, lastP.x - k * YEAR_S, TOL));
+    var g = [];
+    for (var j = 0; j < 4; j++) {
+      if (bad(y[j]) || bad(y[j + 1]) || y[j + 1] <= 0) g.push(NaN);
+      else g.push((y[j] - y[j + 1]) / y[j + 1]);
+    }
+    if (bad(g[0]) || bad(g[1]) || bad(g[2]) || bad(g[3])) return null;
+    var baseline = (g[1] + g[2] + g[3]) / 3;
+    /* a non-positive historical baseline can't anchor a ratio — score on
+       the sign of current growth alone */
+    var r = baseline > 0 ? g[0] / baseline : (g[0] >= 0 ? 1 : 0);
+    return { pts: ratioPts(r),
+             cmp: fmt.pct(g[0] * 100) + ' vs ' + fmt.pct(baseline * 100) + ' avg/yr' };
   }
 
   function bandFor(score) {
@@ -167,10 +184,17 @@
     return BANDS[BANDS.length - 1];
   }
 
-  /* seconds of the stalest feed this panel renders; 0 = nothing stale */
+  /* seconds of the stalest feed this strip renders; 0 = nothing stale */
   function staleSeconds() {
     var worst = 0;
     for (var i = 0; i < FEEDS.length; i++) {
+      /* a BAKED feed value never refreshes by design — its visible as-of
+         line is the honesty mechanism (task-13 rule, same exemption as
+         12-nodes.js). Fetch age on a bake measures tab uptime, not
+         staleness. A live overwrite carries no baked flag, so the normal
+         rule resumes the moment the source self-heals. */
+      var v = store.get(FEEDS[i].key);
+      if (v && v.baked) continue;
       var age = store.age(FEEDS[i].key);
       if (isFinite(age) && age > 2 * FEEDS[i].intervalS && age > worst) worst = age;
     }
@@ -179,22 +203,24 @@
 
   function renderAll() {
     var parts = [
-      { el: rowEls.cadence, val: compCadence(), outOf: 25 },
-      { el: rowEls.mining,  val: compMining(),  outOf: 25 },
-      { el: rowEls.fees,    val: compFees(),    outOf: 20 },
-      { el: rowEls.mempool, val: compMempool(), outOf: 20 },
-      { el: rowEls.fresh,   val: compFresh(),   outOf: 10 }
+      { el: rowEls.nodes, c: compNodes() },
+      { el: rowEls.hash,  c: compHash()  },
+      { el: rowEls.tx,    c: compTx()    },
+      { el: rowEls.sats,  c: compSats()  },
+      { el: rowEls.utxo,  c: compUtxo()  }
     ];
 
     var score = 0, missing = false;
     for (var i = 0; i < parts.length; i++) {
       var p = parts[i];
-      if (bad(p.val)) {
+      if (!p.c || bad(p.c.pts)) {
         missing = true;
-        setVal(p.el, DASH);
+        setVal(p.el.val, DASH);
+        p.el.cmp.textContent = '';
       } else {
-        score += Math.round(p.val); /* fmt.int rounds the same way below */
-        setVal(p.el, fmt.int(p.val) + '/' + p.outOf);
+        score += Math.round(p.c.pts); /* fmt.int rounds the same way below */
+        setVal(p.el.val, fmt.int(p.c.pts) + '/20');
+        p.el.cmp.textContent = p.c.cmp;
       }
     }
 
@@ -220,18 +246,14 @@
     if (worst) staleTag.textContent = 'STALE ' + Math.max(1, Math.round(worst / 60)) + ' MIN';
   }
 
-  store.on('blocks', renderAll);
-  store.on('fees', renderAll);
-  store.on('mempool', renderAll);
+  store.on('nodes', renderAll);
   store.on('hashrate', renderAll);
-  store.on('conn', renderAll); /* freshness folds in down/recover instantly */
-  /* freshness meters the WHOLE pipeline, so the rest are input events too —
-     without these, a recovering endpoint clears the fresh row up to a tick late */
-  store.on('tipHeight', renderAll);
-  store.on('mempoolBlocks', renderAll);
+  store.on('hashrate3y', renderAll);
   store.on('prices', renderAll);
-  store.on('difficulty', renderAll);
+  store.on('priceSeries', renderAll);
+  store.on('txSeries', renderAll);
+  store.on('utxoSeries', renderAll);
 
-  setInterval(renderAll, TICK_MS); /* since-block + staleness stay honest between events */
+  setInterval(renderAll, TICK_MS); /* staleness stays honest between the slow polls */
   renderAll(); /* honest loading state before the first poll resolves */
 })();

@@ -26,7 +26,7 @@ the last line of the page.
   Pages. No API keys, no server of ours.
 - Read-only instrument: no wallet, no keys, no transactions, ever.
 
-## Data source (the only one): mempool.space
+## Data sources: mempool.space (primary)
 
 REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 
@@ -41,6 +41,91 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 | `/api/v1/difficulty-adjustment` | `{progressPercent,difficultyChange,estimatedRetargetDate,remainingBlocks,remainingTime,nextRetargetHeight,timeAvg}` | 5 min |
 | `/api/v1/mining/hashrate/3d` | `{currentHashrate,currentDifficulty}` (H/s, raw) | 5 min |
 | WS `wss://mempool.space/api/v1/ws` | send `{"action":"want","data":["blocks","stats","mempool-blocks"]}` → dump on connect (`blocks` ASCENDING, unlike REST), then ~1 s pushes: `fees`/`mempoolInfo`/`mempool-blocks`/`da`/`vBytesPerSecond` (+ `block` per new block, `conversions` occasionally). `mempoolInfo` is bitcoind shape: `size`→count, `bytes`→vsize, `total_fee` in BTC (REST quotes sats — never map it). `vBytesPerSecond` = live incoming flow, unused (the honest source task 05 wanted — v1.1 candidate). | push (task 09) |
+| `/api/v1/lightning/statistics/latest` | `{latest:{added(ISO date!), channel_count, node_count, total_capacity(sats), tor_nodes, clearnet_nodes, unannounced_nodes,…}}` — a dated SNAPSHOT, observed ~a month behind; panels must show `added` visibly. NO capacity-by-network split exists (Tor capacity % is a named gap — we show Tor nodes instead). | 6 h (task 15) |
+| `/api/v1/mining/difficulty-adjustments` | full retarget history `[[ts, height, difficulty, changePct],…]` NEWEST-FIRST, ~28 KB — powers `HULL.hist` (chain work, implied hashrates, block-time windows, height↔time interpolation) | 6 h (task 15) |
+| `/api/v1/mining/hashrate/3y` | `{hashrates:[{timestamp, avgHashrate}], currentHashrate, currentDifficulty}` daily, chronological — 90-day avg + Integrity's 3-year baseline | 6 h (task 15) |
+| `/api/v1/difficulty-adjustment` extra fields (task 15) | `previousRetarget` (last change %), `timeAvg` (ms, realized epoch block time), `estimatedRetargetDate` (MILLISECONDS) — all in the payload task 07 already polls | — |
+
+### Third origin (task 15): blockchain.info charts
+
+- `https://api.blockchain.info/charts/<chart>?timespan=…&format=json&sampled=true&cors=true`
+  — keyless, CORS VERIFIED (exactly one ACAO header with an Origin set,
+  curl-checked 2026-07-17). Response `{values:[{x(unixSec), y}]}` oldest→newest.
+  Charts in use: `utxo-count` (4y, Integrity + Blockchain hero),
+  `blocks-size` (MB — excludes undo data/indexes, so reads ~100 GB under
+  Clark's on-disk figure; 1-week window, we only show the latest point),
+  `market-price` (3y, Integrity sats/$ baseline), `n-transactions` (3y,
+  Integrity tx/day baseline), `miners-revenue` (1y, USD/day — SUMMED for
+  trailing-365d "Annual mining revenue", Clark's semantics — never project
+  today's rate forward). All registered aux with backoffCapMs 1 h.
+
+### Second origin (task 12): Luke Dashjr node counts
+
+⚠ RESOLUTION 2026-07-17 (researched to exhaustion, 12 agents, adversarially
+verified): Luke's server sends the ACAO header TWICE → every browser rejects
+the CORS response even though curl "sees" the header. NO alternative source
+has both current data and history (bitnodes.io DEAD since 2026-05-03;
+Blockchair = its own ~300 crawler connections, wrong metric, no history;
+KIT DSN no CORS; statoshi = one node's own peers; no maintained mirrors).
+Shipped design: **baked fallback + live upgrade** — `js/data/nodes.js`
+(re-bake: `scripts/bake-nodes.sh`, monthly sitting) seeds the store at boot
+with `baked: '<asOf>'`; the live poll stays registered and OVERWRITES the
+bake whenever his header gets fixed (panel + Integrity self-heal, zero code
+changes). Baked mode shows `· baked <date>` and suppresses the 48 h stale
+tag (task-13 rule: as-of IS the honesty for baked data).
+
+- `https://luke.dashjr.org/programs/bitcoin/files/charts/data/history.txt` —
+  CORS-open plain text, one row per day (~00:00 UTC), history to 2017-04.
+  Poll 6 h → store key `nodes`. Columns: `ts listening est_nonlistening
+  [knots core30 rdts]` — ⚠ col3 ALONE is the extrapolated non-listening
+  estimate; Luke's own chart page sums col2+col3 for "Total node count"
+  (his page's JS is ground truth; task-12's TASK.md example read col3 as
+  the total — wrong). Parsed by `parseNodes` (main.js) to
+  `{ts, listening, total, rows:[{ts,listening,total}]}` with
+  total = col2+col3; the total is an ESTIMATE — panels must carry "est.".
+  Trailing version-split columns stay unused (version stats are out of
+  scope).
+- `HULL.api.poll` extensions (task 12, +15): an absolute `http(s)://` path
+  skips BASE; 6th arg opts = `{ parse: fn(text)->value }` (default stays
+  JSON — a throwing parser counts as a failed attempt), `{ aux: true }` =
+  the poll never gates the page-wide `conn` verdict (slow/third-party
+  feeds must not flip the chip while the live pulse is healthy; their
+  panels carry their own stale tags), and `{ backoffCapMs }` = failure-
+  retry ceiling above the global 5-min cap (a daily-file host must not be
+  hammered forever by every open tab). Drill an absolute-URL poll with
+  `HULL.api.setPath('nodes', '<garbage-url>')` — the BASE drill can't
+  reach it; setPath back to the real URL to recover.
+- Staleness override (nodes panel — deviates from the 2×-interval
+  convention below): the file updates daily, so the panel is stale when
+  the newest ROW is >48 h old, judged on the row's own timestamp (a
+  stalled file and an unreachable server trip the same tag); tag text
+  `STALE n H` (hours, not minutes).
+
+### Baked data (task 13 convention)
+
+- Values with no browser-fetchable source live in `js/data/*.js` as
+  `HULL.baked.<name> = { asOf: 'YYYY-MM-DD', … }`. A baked VALUE shows NO
+  stale tag and never fetches — **the always-visible `as of <date>` line IS
+  the honesty mechanism**; never dress baked data up as live. Derived rows
+  (USD value, % of supply) compute from LIVE feeds so they track between
+  re-bakes — and those rows DO carry the standard 2×-interval stale
+  treatment on their live feeds (review catch 2026-07-17: the no-tag rule
+  covers the bake only; a frozen live-derived dollar figure without a tag
+  is the exact lie the contract forbids). Same rule inside Integrity: a
+  baked feed value (`v.baked`) is exempt from the strip's fetch-age
+  staleness — fetch age on a bake measures tab uptime, not data health.
+- Currently baked: `treasuries` (`totalBtc` = bitcointreasuries.net "all
+  public companies" total; refresh procedure in task-13's TASK.md) and
+  `opreturn` (`gb` total OP_RETURN payload — no public CORS source exists;
+  refresh via the monthly BigQuery sitting Joe already runs for the
+  bitcoinburned tally). Both refresh monthly in ONE sitting.
+
+### Minor-stat tier (task 15)
+
+- `.panel-minor` on a `.panel` = the ~2/3-scale tier (Corporate
+  treasuries, Lightning). Same grid, same honest-state rules, smaller
+  type. Minor cards sit BELOW the major grid, ABOVE the chain-tip strip
+  (page order fixed by Joe 2026-07-17: majors → minors → chain tip).
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper
@@ -56,8 +141,12 @@ css/style.css       all styling; design tokens at the top in :root
 js/format.js        HULL.fmt.*  number/time formatters (task 02)
 js/supply.js        HULL.supplyAt(height) exact issuance (task 06)
 js/store.js         HULL.store  state + pub/sub          (task 02)
+js/hist.js          HULL.hist   retarget-history derivations: chain work,
+                    implied hashrate, block-time windows (task 15)
+js/data/*.js        HULL.baked.* baked values + as-of (task 13 convention)
 js/api.js           HULL.api    poll scheduler + backoff (task 02)
-js/panels/NN-*.js   one file per panel, subscribes to store (tasks 03–08)
+js/panels/NN-*.js   one file per panel, NN = the task that shipped it
+                    (tasks 03–08, 11–13, 15 — task 15 shipped several)
 js/live.js          WebSocket layer                      (task 09)
 js/main.js          boot: start polls, init panels      (task 02+)
 tasks/              this system

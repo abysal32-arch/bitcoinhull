@@ -7,7 +7,10 @@
   var HULL = window.HULL = window.HULL || {};
 
   var KEYS = ['tipHeight', 'blocks', 'fees', 'mempool', 'mempoolBlocks',
-              'prices', 'difficulty', 'hashrate', 'conn'];
+              'prices', 'difficulty', 'hashrate', 'nodes', 'conn',
+              /* task 15 (Clark expansion) + Integrity history feeds */
+              'lightning', 'minersRevenue', 'diffHistory', 'hashrate3y',
+              'utxoSeries', 'chainSize', 'priceSeries', 'txSeries'];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */

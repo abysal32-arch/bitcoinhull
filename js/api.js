@@ -26,7 +26,7 @@
   var STAGGER_MS = 350;
   var CONN_TICK_MS = 10000;
 
-  var polls = []; /* { name, path, storeKey, intervalMs, cadence, failures, hasSucceeded, timer, idx } */
+  var polls = []; /* { name, path, storeKey, intervalMs, parse, aux, cadence, failures, hasSucceeded, timer, idx } */
   var pushHealthy = false; /* HULL.live's verdict, via setPush() */
 
   function log(msg) { if (DEBUG) console.log('[hull] ' + msg); }
@@ -40,13 +40,38 @@
     /* accept (optional): accept(newBody, currentValue) -> false to keep
        the current store value (the endpoint still counts as healthy).
        Task 09: the socket can out-run a poll around a block arrival — a
-       response serialized pre-block must not regress the newer push. */
-    poll: function (name, path, storeKey, intervalMs, accept) {
+       response serialized pre-block must not regress the newer push.
+       opts (optional, task 12):
+         parse: fn(text) -> value — for non-JSON bodies (default stays
+                res.json()); a parser that throws counts as a failed
+                attempt, never a stored value.
+         aux:   true — auxiliary third-party feed: never gates the
+                page-wide conn verdict (its panel carries its own stale
+                tag; a fragile daily-estimate host must not flip the chip
+                while every primary feed is live).
+         backoffCapMs: failure-retry ceiling above the global 5 min cap —
+                a daily-file host must not be hammered every 5 min
+                forever by every open tab. */
+    poll: function (name, path, storeKey, intervalMs, accept, opts) {
+      opts = opts || {};
       var p = { name: name, path: path, storeKey: storeKey, intervalMs: intervalMs,
-                accept: accept || null, cadence: 1, failures: 0, hasSucceeded: false,
+                accept: accept || null, parse: opts.parse || null, aux: !!opts.aux,
+                backoffCapMs: opts.backoffCapMs || BACKOFF_MAX_MS,
+                cadence: 1, failures: 0, hasSucceeded: false,
                 timer: null, seq: 0, idx: polls.length };
       polls.push(p);
       schedule(p, p.idx * STAGGER_MS); /* staggered start */
+    },
+
+    /* task 12: the drill lever for absolute-URL polls, which the mutable
+       BASE can't reach — HULL.api.setPath('nodes', '<garbage url>') to
+       rehearse failure, setPath back to the real URL to recover. */
+    setPath: function (name, path) {
+      for (var i = 0; i < polls.length; i++) {
+        if (polls[i].name !== name) continue;
+        polls[i].path = path;
+        schedule(polls[i], 0);
+      }
     },
 
     /* re-run every poll now (keeps per-endpoint backoff counters) */
@@ -99,10 +124,13 @@
     var kill = setTimeout(function () { ctrl.abort(); }, FETCH_TIMEOUT_MS);
     var t0 = performance.now();
 
-    fetch(api.BASE + p.path, { cache: 'no-store', signal: ctrl.signal })
+    /* task 12: an absolute http(s):// path is its own origin — BASE (and
+       the garbage-BASE drill) doesn't apply; drill these via setPath() */
+    var url = /^https?:\/\//.test(p.path) ? p.path : api.BASE + p.path;
+    fetch(url, { cache: 'no-store', signal: ctrl.signal })
       .then(function (res) {
         if (!res.ok) throw new Error('HTTP ' + res.status);
-        return res.json();
+        return p.parse ? res.text().then(p.parse) : res.json();
       })
       .then(function (body) {
         /* fresh data is fresh data, even from a superseded attempt */
@@ -119,7 +147,7 @@
       .catch(function (err) {
         if (seq !== p.seq) return; /* superseded — the live chain measures its own failures */
         p.failures += 1;
-        var wait = Math.min(BACKOFF_BASE_MS * Math.pow(2, p.failures - 1), BACKOFF_MAX_MS);
+        var wait = Math.min(BACKOFF_BASE_MS * Math.pow(2, p.failures - 1), p.backoffCapMs);
         log(p.name + ' failed (' + (err && err.message) + ') — retry in ' + Math.round(wait / 1000) + ' s');
         schedule(p, wait);
       })
@@ -146,6 +174,7 @@
     } else {
       var resolved = [];
       for (var i = 0; i < polls.length; i++) {
+        if (polls[i].aux) continue; /* auxiliary feeds sit outside the verdict */
         if (polls[i].hasSucceeded || polls[i].failures > 0) resolved.push(polls[i]);
       }
       if (resolved.length === 0) {
