@@ -44,10 +44,11 @@
     </div>
   </details>
 
-  <!-- Major grid order per Joe 2026-07-18 (task 17): row 1 = Chain
-       security (the renamed mining panel) | Price | Nodes; row 2 =
-       Supply | Mempool | Transactions; row 3 = Fees | Blockchain |
-       Difficulty retarget; row 4 = Halving. -->
+  <!-- Grid order per Joe 2026-07-18 (task 19): ONE tier, 12 equal
+       panels, 3 per row — Chain security | Price | Nodes /
+       Blockchain | Mempool | Transactions / Supply | Fees |
+       Difficulty retarget / Halving | Treasuries | Lightning.
+       All 12 must fit on screen at once. -->
 
   <!-- CHAIN SECURITY (the mining panel, retitled per Joe 2026-07-18 —
        ids/hooks keep the mining- names; the standalone security panel
@@ -79,7 +80,7 @@
   <section class="panel span-4" id="panel-nodes">
     <div class="panel-head"><h2>Nodes <span class="stale-tag" data-nodes-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-nodes-total>—</span><span class="hero-unit">est. nodes</span></div>
-    <div class="hero-sub">listening + extrapolated non-listening<span class="asof" data-nodes-asof></span></div>
+    <div class="hero-sub">listening + extrapolated non-listening</div>
     <div class="rows">
       <div class="row"><span>Listening (reachable)</span><span class="val" data-nodes-listening>—</span></div>
       <div class="row"><span>30-day change</span><span class="val" data-nodes-trend>—</span></div>
@@ -88,18 +89,15 @@
     <div class="panel-credit">data: <a href="https://luke.dashjr.org/programs/bitcoin/files/charts/historical.html" target="_blank" rel="noopener">luke.dashjr.org</a> · daily estimate</div>
   </section>
 
-  <!-- SUPPLY -->
-  <section class="panel span-4" id="panel-supply">
-    <div class="panel-head"><h2>Supply <span class="stale-tag" data-supply-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
-    <div class="hero-sub">issued of 21,000,000</div>
+  <!-- BLOCKCHAIN (task 15; height first, UTXO second per Joe 2026-07-18) -->
+  <section class="panel span-4" id="panel-blockchain">
+    <div class="panel-head"><h2>Blockchain <span class="stale-tag" data-blockchain-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-blockchain-height>—</span><span class="hero-unit">height</span></div>
+    <div class="hero-sub">latest block on the chain</div>
     <div class="rows">
-      <div class="row row-bar">
-        <span>Issued</span>
-        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-supply-bar style="width:95.45%"></span></span><span class="val" data-supply-pct>95.45%</span></span>
-      </div>
-      <div class="row"><span>Block subsidy</span><span class="val"><span data-supply-subsidy>3.125</span> BTC</span></div>
-      <div class="row"><span>Annual inflation</span><span class="val" data-supply-inflation>0.82%</span></div>
+      <div class="row"><span>UTXO set size</span><span class="val" data-blockchain-utxo>—</span></div>
+      <div class="row"><span>Chain size</span><span class="val" data-blockchain-size>—</span></div>
+      <div class="row"><span>Block time (prior year)</span><span class="val" data-blockchain-btyear>—</span></div>
     </div>
   </section>
 
@@ -133,6 +131,21 @@
     <div class="panel-credit">data: <a href="https://blockchair.com" target="_blank" rel="noopener">Blockchair</a> · <a href="https://www.blockchain.com/explorer/charts" target="_blank" rel="noopener">blockchain.info</a></div>
   </section>
 
+  <!-- SUPPLY -->
+  <section class="panel span-4" id="panel-supply">
+    <div class="panel-head"><h2>Supply <span class="stale-tag" data-supply-stale hidden>STALE</span></h2></div>
+    <div class="metric-hero"><span class="hero-num" data-supply-btc>20,044,753</span><span class="hero-unit">BTC</span></div>
+    <div class="hero-sub">issued of 21,000,000</div>
+    <div class="rows">
+      <div class="row row-bar">
+        <span>Issued</span>
+        <span class="bar-wrap"><span class="bar"><span class="bar-fill" data-supply-bar style="width:95.45%"></span></span><span class="val" data-supply-pct>95.45%</span></span>
+      </div>
+      <div class="row"><span>Block subsidy</span><span class="val"><span data-supply-subsidy>3.125</span> BTC</span></div>
+      <div class="row"><span>Annual inflation</span><span class="val" data-supply-inflation>0.82%</span></div>
+    </div>
+  </section>
+
   <!-- FEES -->
   <section class="panel span-4" id="panel-fees">
     <div class="panel-head">
@@ -146,18 +159,6 @@
       <div class="row"><span>1 hour</span><span class="val"><span data-fee-hour>—</span> sat/vB</span></div>
       <div class="row"><span>Economy</span><span class="val"><span data-fee-econ>—</span> sat/vB</span></div>
       <div class="row"><span>Floor</span><span class="val"><span data-fee-min>—</span> sat/vB</span></div>
-    </div>
-  </section>
-
-  <!-- BLOCKCHAIN (task 15; height first, UTXO second per Joe 2026-07-18) -->
-  <section class="panel span-4" id="panel-blockchain">
-    <div class="panel-head"><h2>Blockchain <span class="stale-tag" data-blockchain-stale hidden>STALE</span></h2></div>
-    <div class="metric-hero"><span class="hero-num" data-blockchain-height>—</span><span class="hero-unit">height</span></div>
-    <div class="hero-sub">latest block on the chain</div>
-    <div class="rows">
-      <div class="row"><span>UTXO set size</span><span class="val" data-blockchain-utxo>—</span></div>
-      <div class="row"><span>Chain size</span><span class="val" data-blockchain-size>—</span></div>
-      <div class="row"><span>Block time (prior year)</span><span class="val" data-blockchain-btyear>—</span></div>
     </div>
   </section>
 
@@ -192,10 +193,10 @@
     </div>
   </section>
 
-  <!-- MINOR STATS (task 15 tier; half the major scale per Joe 2026-07-18) -->
-  <!-- treasuries went LIVE in task 17 (CoinGecko, keyless + CORS-verified);
-       the task-13 bitcointreasuries.net bake retired with the bake itself -->
-  <section class="panel span-4 panel-minor" id="panel-treasuries">
+  <!-- Treasuries + Lightning: former minor tier, promoted to the one
+       equal-size tier per Joe 2026-07-18 (task 19). Treasuries LIVE via
+       CoinGecko since task 17. -->
+  <section class="panel span-4" id="panel-treasuries">
     <div class="panel-head"><h2>Corporate treasuries <span class="stale-tag" data-treasuries-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-treasuries-btc>—</span><span class="hero-unit">BTC</span></div>
     <div class="hero-sub">held by <span data-treasuries-companies>—</span> public companies</div>
@@ -207,7 +208,7 @@
     <div class="panel-credit">data: <a href="https://www.coingecko.com/en/public-companies-bitcoin" target="_blank" rel="noopener">CoinGecko</a> · live</div>
   </section>
 
-  <section class="panel span-4 panel-minor" id="panel-lightning">
+  <section class="panel span-4" id="panel-lightning">
     <div class="panel-head"><h2>Lightning (public) <span class="stale-tag" data-lightning-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-lightning-cap>—</span><span class="hero-unit">BTC</span></div>
     <div class="hero-sub">total public capacity · snapshot <span data-lightning-asof>—</span></div>
