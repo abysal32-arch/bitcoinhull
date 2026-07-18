@@ -40,7 +40,10 @@
   var LABEL_PAD_PX = 6;
 
   /* feeds this panel renders; stale = has data but older than 2× its poll
-     interval (never-fetched is the loading state, not stale) */
+     interval (never-fetched is the loading state, not stale).
+     vbps is deliberately NOT here (task 14): it is socket-only — its row
+     dashes the moment conn leaves "live", and a dead socket with healthy
+     REST must not tag the whole panel STALE. */
   var FEEDS = [
     { key: 'mempool',       intervalS: 30 },
     { key: 'mempoolBlocks', intervalS: 30 }
@@ -50,6 +53,7 @@
   var staleTag = panel.querySelector('[data-mempool-stale]');
   var vsizeEl = panel.querySelector('[data-mempool-vsize]');
   var countEl = panel.querySelector('[data-mempool-count]');
+  var incomingEl = panel.querySelector('[data-mempool-incoming]');
   var depthEl = panel.querySelector('[data-mempool-depth]');
   var vizEl = panel.querySelector('[data-mempool-viz]');
 
@@ -76,6 +80,10 @@
     var mp = store.get('mempool') || {};
     setVal(vsizeEl, fmt.mb(mp.vsize));
     setVal(countEl, fmt.int(mp.count));
+    /* task 14: incoming flow is socket-only — a value ONLY while the push
+       layer is healthy; POLLING/DEGRADED/DOWN/pre-first-push all dash.
+       There is no REST fallback and we never fake one. */
+    setVal(incomingEl, store.get('conn') === 'live' ? fmt.vbps(store.get('vbps')) : DASH);
   }
 
   /* Blocks to clear = how many block templates the whole backlog fills.
@@ -224,6 +232,8 @@
 
   store.on('mempool', renderAll);
   store.on('mempoolBlocks', renderAll);
+  store.on('vbps', renderAll);
+  store.on('conn', renderAll); /* the incoming row follows the chip, instantly */
 
   /* label fit depends on the bar's pixel width — recheck after resizes */
   var resizeTimer = null;

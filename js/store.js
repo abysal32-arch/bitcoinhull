@@ -10,7 +10,8 @@
               'prices', 'difficulty', 'hashrate', 'nodes', 'conn',
               /* task 15 (Clark expansion) + Integrity history feeds */
               'lightning', 'minersRevenue', 'diffHistory', 'hashrate3y',
-              'utxoSeries', 'chainSize', 'priceSeries', 'txSeries'];
+              'utxoSeries', 'chainSize', 'priceSeries', 'txSeries',
+              'vbps' /* task 14: socket-only incoming flow, vB/s */];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */

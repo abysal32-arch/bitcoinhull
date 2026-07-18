@@ -45,7 +45,7 @@
   var ws = null, wsSeq = 0, healthy = false, failures = 0;
   var reconnectTimer = null, connectTimer = null, flapTimer = null;
   var lastMsgAt = 0, stopped = false;
-  var lastApply = { fees: 0, mempool: 0, mempoolBlocks: 0, difficulty: 0 };
+  var lastApply = { fees: 0, mempool: 0, mempoolBlocks: 0, difficulty: 0, vbps: 0 };
 
   function log(msg) { if (DEBUG) console.log('[hull] ws ' + msg); }
 
@@ -146,9 +146,11 @@
 
     /* health is earned by data we actually consume — a socket chattering
        garbage or only unwanted channels (transactions arrives unasked)
-       must not hold the chip at LIVE while the wanted channels stall */
+       must not hold the chip at LIVE while the wanted channels stall.
+       vBytesPerSecond joined the consumed set in task 14. */
     if (!(m.block || m.blocks || m['mempool-blocks'] || m.fees ||
-          m.mempoolInfo || m.da || m.conversions)) return;
+          m.mempoolInfo || m.da || m.conversions ||
+          m.vBytesPerSecond != null)) return;
     lastMsgAt = Date.now();
     if (!healthy) { clearTimeout(connectTimer); setHealthy(true); }
 
@@ -162,6 +164,7 @@
     if (m.mempoolInfo) applyMempoolInfo(m.mempoolInfo, force);
     if (m.da) applyDa(m.da, force);
     if (m.conversions) applyConversions(m.conversions);
+    if (m.vBytesPerSecond != null) applyVbps(m.vBytesPerSecond, force);
   }
 
   /* stats-family gate: at ~1 push/s, applying every Nth is still live —
@@ -276,6 +279,15 @@
   function applyConversions(c) {
     if (!c || bad(c.USD) || c.USD <= 0) return;
     store.set('prices', c);
+  }
+
+  /* task 14: live incoming flow, vB/s — SOCKET-ONLY (no REST endpoint
+     carries it), so the mempool panel renders it only while conn is
+     "live" and never fakes a fallback */
+  function applyVbps(v, force) {
+    if (bad(v) || v < 0) return;
+    if (!due('vbps', force)) return;
+    store.set('vbps', v);
   }
 
   /* ---- the new-block flash --------------------------------------------- */

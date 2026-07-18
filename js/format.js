@@ -170,6 +170,14 @@
     bits: function (n) {
       if (bad(n)) return DASH;
       return strip(n.toFixed(1)) + ' bits';
+    },
+
+    /* incoming flow: 845 -> "845 vB/s" · 2340 -> "2.3 kvB/s" — unit
+       included because it switches (precedent: fmt.dur) */
+    vbps: function (n) {
+      if (bad(n)) return DASH;
+      if (n < 1000) return intFmt.format(Math.round(n)) + ' vB/s';
+      return strip((n / 1000).toFixed(1)) + ' kvB/s';
     }
   };
 })();
