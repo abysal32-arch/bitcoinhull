@@ -41,6 +41,18 @@
     return { ts: last.ts, listening: last.listening, total: last.total, rows: rows };
   }
 
+  /* task 17: CoinGecko treasuries payload -> the small shape the minor
+     card needs. A missing total throws so the poll records a failure
+     instead of storing junk. */
+  function parseTreasuries(text) {
+    var j = JSON.parse(text);
+    if (!j || typeof j.total_holdings !== 'number' || !isFinite(j.total_holdings)) {
+      throw new Error('unexpected treasuries payload');
+    }
+    return { btc: j.total_holdings,
+             companies: j.companies && j.companies.length ? j.companies.length : NaN };
+  }
+
   /* name, path, store key, interval, accept, opts — the _SHARED.md endpoint
      table. nodes (task 12) is the one second-origin feed: absolute URL,
      text parser, 6 h cadence, aux = never gates the conn chip. */
@@ -62,8 +74,6 @@
        (CORS verified: exactly one ACAO header with cors=true). */
     ['lightning',     '/api/v1/lightning/statistics/latest',
                                                        'lightning',   21600000, null, { aux: true }],
-    ['minersRevenue', 'https://api.blockchain.info/charts/miners-revenue?timespan=1year&format=json&cors=true',
-                                                       'minersRevenue', 21600000, null, { aux: true, backoffCapMs: 3600000 }],
     ['diffHistory',   '/api/v1/mining/difficulty-adjustments',
                                                        'diffHistory', 21600000, null, { aux: true }],
     ['hashrate3y',    '/api/v1/mining/hashrate/3y',
@@ -75,7 +85,21 @@
     ['priceSeries',   'https://api.blockchain.info/charts/market-price?timespan=3years&format=json&sampled=true&cors=true',
                                                        'priceSeries', 21600000, null, { aux: true, backoffCapMs: 3600000 }],
     ['txSeries',      'https://api.blockchain.info/charts/n-transactions?timespan=3years&format=json&sampled=true&cors=true',
-                                                       'txSeries',    21600000, null, { aux: true, backoffCapMs: 3600000 }]
+                                                       'txSeries',    21600000, null, { aux: true, backoffCapMs: 3600000 }],
+    /* task 17 (Joe, 2026-07-18): transactions panel — cumulative all-time
+       total + EXACT (unsampled) 30-day daily counts. Same charts origin,
+       same aux rules; both browser-CORS-verified 2026-07-18. */
+    ['txTotal',       'https://api.blockchain.info/charts/n-transactions-total?timespan=30days&format=json&sampled=true&cors=true',
+                                                       'txTotal',     21600000, null, { aux: true, backoffCapMs: 3600000 }],
+    ['tx30d',         'https://api.blockchain.info/charts/n-transactions?timespan=30days&format=json&cors=true',
+                                                       'tx30d',       21600000, null, { aux: true, backoffCapMs: 3600000 }],
+    /* task 17: treasuries went LIVE — CoinGecko keyless public_treasury
+       endpoint (browser-CORS-verified 2026-07-18, single ACAO header,
+       server refresh ~5 min). Hourly is polite headroom under their
+       per-IP burst limit (~5-9 rapid calls -> 429). */
+    ['treasuries',    'https://api.coingecko.com/api/v3/companies/public_treasury/bitcoin',
+                                                       'treasuries',   3600000, null,
+                                                       { parse: parseTreasuries, aux: true, backoffCapMs: 3600000 }]
   ];
   /* task 12: seed the nodes store from the baked Luke history BEFORE the
      polls start — his server's duplicate CORS header blocks every browser

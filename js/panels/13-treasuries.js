@@ -1,11 +1,15 @@
-/* Bitcoin Hull — corporate-treasuries minor card (task 13, minor tier per
-   Joe 2026-07-17): baked public-company BTC total; USD value and share of
-   supply are computed LIVE from the price feed + exact supply helper, so
-   they track between monthly re-bakes. Honesty split (review catch,
-   2026-07-17): the always-visible as-of date vouches for the BAKED BTC
-   total only (no stale tag for the bake — task-13 rule), while the STALE
-   tag covers the live-derived Value / Share-of-supply rows' feeds, exactly
-   like the sibling Lightning card. */
+/* Bitcoin Hull — corporate-treasuries minor card (task 13; LIVE since
+   task 17, Joe 2026-07-18): total BTC held by public companies from
+   CoinGecko's keyless public_treasury endpoint (browser-CORS-verified,
+   single ACAO header, server-side refresh ~5 min, polled hourly as an aux
+   third-party feed). USD value and share of supply still compute from OUR
+   price feed + exact supply helper so they track between polls. All three
+   surfaces carry the standard 2×-interval stale treatment — no bake, no
+   as-of line, no exemptions.
+   Source note (2026-07-18 research, adversarially corroborated): CoinGecko
+   ~1.29M BTC agrees with bitcointreasuries.net itself, bitbo.io, and press
+   aggregates (all 1.2–1.3M, #1 holder identical); the retired task-13 bake
+   (2.29M) matched no current category and looks to have been a misread. */
 (function () {
   'use strict';
 
@@ -15,16 +19,16 @@
   var DASH = '—';
   var TICK_MS = 30000;
 
-  /* the LIVE feeds the derived rows render from; the baked total is exempt */
   var FEEDS = [
-    { key: 'prices',    intervalS: 60 },
-    { key: 'tipHeight', intervalS: 60 }
+    { key: 'treasuries', intervalS: 3600 },
+    { key: 'prices',     intervalS: 60 },
+    { key: 'tipHeight',  intervalS: 60 }
   ];
 
   var panel = document.getElementById('panel-treasuries');
   var staleTag = panel.querySelector('[data-treasuries-stale]');
   var btcEl = panel.querySelector('[data-treasuries-btc]');
-  var asOfEl = panel.querySelector('[data-treasuries-asof]');
+  var companiesEl = panel.querySelector('[data-treasuries-companies]');
   var valueEl = panel.querySelector('[data-treasuries-value]');
   var pctEl = panel.querySelector('[data-treasuries-pct]');
 
@@ -35,7 +39,6 @@
 
   function bad(n) { return typeof n !== 'number' || !isFinite(n); }
 
-  /* seconds of the stalest LIVE feed the derived rows use; 0 = fresh */
   function staleSeconds() {
     var worst = 0;
     for (var i = 0; i < FEEDS.length; i++) {
@@ -46,10 +49,10 @@
   }
 
   function renderAll() {
-    var t = HULL.baked && HULL.baked.treasuries;
-    var btc = t ? t.totalBtc : NaN;
+    var t = store.get('treasuries') || {};
+    var btc = bad(t.btc) ? NaN : t.btc;
     setVal(btcEl, fmt.int(btc));
-    asOfEl.textContent = t ? t.asOf : DASH;
+    setVal(companiesEl, fmt.int(t.companies));
 
     var prices = store.get('prices') || {};
     setVal(valueEl, bad(btc) || bad(prices.USD) ? DASH : fmt.usdBig(btc * prices.USD));
@@ -65,6 +68,7 @@
     if (worst) staleTag.textContent = 'STALE ' + Math.max(1, Math.round(worst / 60)) + ' MIN';
   }
 
+  store.on('treasuries', renderAll);
   store.on('prices', renderAll);
   store.on('tipHeight', renderAll);
 

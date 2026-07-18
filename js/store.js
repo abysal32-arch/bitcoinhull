@@ -8,10 +8,13 @@
 
   var KEYS = ['tipHeight', 'blocks', 'fees', 'mempool', 'mempoolBlocks',
               'prices', 'difficulty', 'hashrate', 'nodes', 'conn',
-              /* task 15 (Clark expansion) + Integrity history feeds */
-              'lightning', 'minersRevenue', 'diffHistory', 'hashrate3y',
+              /* task 15 (Clark expansion) + Integrity history feeds —
+                 minersRevenue retired with the security panel (task 17) */
+              'lightning', 'diffHistory', 'hashrate3y',
               'utxoSeries', 'chainSize', 'priceSeries', 'txSeries',
-              'vbps' /* task 14: socket-only incoming flow, vB/s */];
+              'vbps', /* task 14: socket-only incoming flow, vB/s */
+              'txTotal', 'tx30d', 'treasuries' /* task 17: transactions
+                panel + the now-live CoinGecko treasuries feed */];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */

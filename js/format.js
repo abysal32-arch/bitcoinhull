@@ -178,6 +178,13 @@
       if (bad(n)) return DASH;
       if (n < 1000) return intFmt.format(Math.round(n)) + ' vB/s';
       return strip((n / 1000).toFixed(1)) + ' kvB/s';
+    },
+
+    /* transaction rate: 7.83 -> "7.8 tx/s" · 12.4 -> "12 tx/s" (task 17) */
+    txs: function (n) {
+      if (bad(n)) return DASH;
+      if (n >= 10) return intFmt.format(Math.round(n)) + ' tx/s';
+      return strip(n.toFixed(1)) + ' tx/s';
     }
   };
 })();

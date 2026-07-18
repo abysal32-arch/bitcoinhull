@@ -50,14 +50,36 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 
 - `https://api.blockchain.info/charts/<chart>?timespan=…&format=json&sampled=true&cors=true`
   — keyless, CORS VERIFIED (exactly one ACAO header with an Origin set,
-  curl-checked 2026-07-17). Response `{values:[{x(unixSec), y}]}` oldest→newest.
-  Charts in use: `utxo-count` (4y, Integrity + Blockchain hero),
-  `blocks-size` (MB — excludes undo data/indexes, so reads ~100 GB under
-  Clark's on-disk figure; 1-week window, we only show the latest point),
-  `market-price` (3y, Integrity sats/$ baseline), `n-transactions` (3y,
-  Integrity tx/day baseline), `miners-revenue` (1y, USD/day — SUMMED for
-  trailing-365d "Annual mining revenue", Clark's semantics — never project
-  today's rate forward). All registered aux with backoffCapMs 1 h.
+  curl-checked 2026-07-17, re-verified in-browser 2026-07-18; `cors=true`
+  is REQUIRED — without it there is NO ACAO header at all). Response
+  `{values:[{x(unixSec), y}]}` oldest→newest. Charts in use: `utxo-count`
+  (4y, Integrity + Blockchain panel), `blocks-size` (MB — excludes undo
+  data/indexes, so reads ~100 GB under Clark's on-disk figure; 1-week
+  window, we only show the latest point), `market-price` (3y, Integrity
+  sats/$ baseline), `n-transactions` (3y sampled, Integrity tx/day
+  baseline; PLUS a separate exact `timespan=30days` unsampled poll, store
+  key `tx30d`, task 17), `n-transactions-total` (30d window, newest point
+  = cumulative all-time tx count, store key `txTotal`, task 17 — the
+  chart is DAY-BUCKETED, so it lags a live counter like Clark's by up to
+  ~2 days; named gap, accepted). All registered aux with backoffCapMs 1 h.
+  `miners-revenue` RETIRED in task 17 with the standalone security panel.
+- Transactions panel derivations (task 17): 30-day count = sum of the
+  exact daily series; rate = count / the series' own covered seconds;
+  avg-per-block = count / (HULL.hist height at the series end-edge minus
+  height at its start-edge) — all anchored on the series' own dates.
+  `fmt.txs` formats the rate ("7.8 tx/s").
+
+### Fourth origin (task 17): CoinGecko treasuries — LIVE
+
+- `https://api.coingecko.com/api/v3/companies/public_treasury/bitcoin` —
+  keyless, CORS verified in-browser 2026-07-18 (single ACAO `*`), server
+  refresh ~5 min, polled HOURLY (aux, backoffCapMs 1 h; their per-IP
+  burst limit 429s after ~5-9 rapid calls — never poll fast). Parsed to
+  `{btc: total_holdings, companies}` (store key `treasuries`). Research
+  2026-07-18 (adversarially corroborated 4-way: CoinGecko 1.285M,
+  bitcointreasuries.net itself 1.263M, bitbo.io 1.20M, press 1.26-1.31M,
+  identical #1 holder): the retired task-13 bake (2.29M) matched NO
+  current category — treat pre-task-17 treasuries history as suspect.
 
 ### Second origin (task 12): Luke Dashjr node counts
 
@@ -114,18 +136,29 @@ tag (task-13 rule: as-of IS the honesty for baked data).
   is the exact lie the contract forbids). Same rule inside Integrity: a
   baked feed value (`v.baked`) is exempt from the strip's fetch-age
   staleness — fetch age on a bake measures tab uptime, not data health.
-- Currently baked: `treasuries` (`totalBtc` = bitcointreasuries.net "all
-  public companies" total; refresh procedure in task-13's TASK.md) and
-  `opreturn` (`gb` total OP_RETURN payload — no public CORS source exists;
-  refresh via the monthly BigQuery sitting Joe already runs for the
-  bitcoinburned tally). Both refresh monthly in ONE sitting.
+- Currently baked: ONLY `nodes` (the task-12 Luke fallback). Task 17
+  (Joe, 2026-07-18) retired the other two: `treasuries` went LIVE via
+  CoinGecko (above), and `opreturn` was DROPPED from the page — Joe
+  vetoed baked-as-of labels, and 2026-07-18 research re-confirmed no
+  live source exists (opreturn.org, the one site that carried the
+  metric, died ~May 2026; label-required + no-live-source = no stat).
+  The monthly BigQuery OP_RETURN sitting continues for bitcoinburned
+  only.
 
-### Minor-stat tier (task 15)
+### Minor-stat tier (task 15; rescaled task 17)
 
-- `.panel-minor` on a `.panel` = the ~2/3-scale tier (Corporate
-  treasuries, Lightning). Same grid, same honest-state rules, smaller
-  type. Minor cards sit BELOW the major grid, ABOVE the chain-tip strip
-  (page order fixed by Joe 2026-07-17: majors → minors → chain tip).
+- `.panel-minor` on a `.panel` = the small tier (Corporate treasuries,
+  Lightning). Same grid, same honest-state rules, HALF the major scale
+  since task 17's density pass (majors themselves shrank to ~half their
+  v1.1 footprint; type floors are legibility-bound, not literal 50% —
+  11.5px major rows / 9.5px minor rows). Minor cards sit BELOW the major
+  grid, ABOVE the chain-tip strip (order fixed by Joe 2026-07-17:
+  majors → minors → chain tip).
+- Major-grid order (Joe, 2026-07-18, task 17 — 3 per row): Chain
+  security (the RENAMED mining panel — ids/hooks keep `mining`; the
+  task-15 standalone security panel + its `minersRevenue` feed are GONE)
+  | Price | Nodes; Supply | Mempool | Transactions; Fees | Blockchain
+  (height hero, UTXO 2nd) | Difficulty retarget; Halving.
 
 Supply/halving are NOT fetched — computed exactly from tip height
 (sum of subsidy eras, halving every 210,000 blocks). The era-sum helper

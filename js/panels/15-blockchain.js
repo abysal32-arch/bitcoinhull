@@ -1,9 +1,11 @@
-/* Bitcoin Hull — blockchain panel (task 15): UTXO-set size hero, chain
-   size, baked OP_RETURN total, prior-year realized block time. UTXO and
-   chain size come from blockchain.info charts (aux third-party, 6 h);
-   OP_RETURN is BAKED (no public CORS source exists) — its inline as-of
-   tag is the honesty mechanism, task-13 style. Renders from HULL.store
-   (+ HULL.baked) only. */
+/* Bitcoin Hull — blockchain panel (task 15; height-first per Joe
+   2026-07-18): block-height hero, then UTXO-set size, chain size,
+   prior-year realized block time. UTXO and chain size come from
+   blockchain.info charts (aux third-party, 6 h). The baked OP_RETURN row
+   retired in task 17: Joe vetoed baked-as-of labels, and 2026-07-18
+   research re-confirmed NO live source exists (opreturn.org, the one site
+   that had it, died ~May 2026) — no label allowed + no live feed = no
+   stat. Renders from HULL.store only. */
 (function () {
   'use strict';
 
@@ -14,6 +16,7 @@
   var TICK_MS = 30000;
 
   var FEEDS = [
+    { key: 'tipHeight',   intervalS: 60 },
     { key: 'utxoSeries',  intervalS: 21600 },
     { key: 'chainSize',   intervalS: 21600 },
     { key: 'diffHistory', intervalS: 21600 },
@@ -22,10 +25,9 @@
 
   var panel = document.getElementById('panel-blockchain');
   var staleTag = panel.querySelector('[data-blockchain-stale]');
+  var heightEl = panel.querySelector('[data-blockchain-height]');
   var utxoEl = panel.querySelector('[data-blockchain-utxo]');
   var sizeEl = panel.querySelector('[data-blockchain-size]');
-  var oprEl = panel.querySelector('[data-blockchain-opreturn]');
-  var oprAsOfEl = panel.querySelector('[data-blockchain-opreturn-asof]');
   var btYearEl = panel.querySelector('[data-blockchain-btyear]');
 
   function setVal(el, text) {
@@ -54,15 +56,14 @@
   }
 
   function renderAll() {
+    var tip = store.get('tipHeight');
+    setVal(heightEl, fmt.int(bad(tip) ? NaN : tip));
+
     setVal(utxoEl, fmt.int(lastY('utxoSeries')));
 
     /* charts serve MB (decimal) — display GB */
     var mb = lastY('chainSize');
     setVal(sizeEl, fmt.gb(bad(mb) ? NaN : mb / 1000));
-
-    var baked = HULL.baked && HULL.baked.opreturn;
-    setVal(oprEl, fmt.gb(baked ? baked.gb : NaN));
-    oprAsOfEl.textContent = baked ? '· baked ' + baked.asOf : '';
 
     var bt = hist.priorYearBlockTime();
     setVal(btYearEl, fmt.mmss(bt == null ? NaN : bt));
@@ -73,6 +74,7 @@
     if (worst) staleTag.textContent = 'STALE ' + Math.max(1, Math.round(worst / 60)) + ' MIN';
   }
 
+  store.on('tipHeight', renderAll);
   store.on('utxoSeries', renderAll);
   store.on('chainSize', renderAll);
   store.on('diffHistory', renderAll);
