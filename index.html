@@ -23,26 +23,23 @@
   <!-- BITCOINHULL INTEGRITY -->
   <details class="panel span-12 integrity" id="panel-integrity">
     <summary class="integrity-row">
-      <h2 class="integrity-title">Bitcoin's Hull Integrity</h2>
+      <h2 class="integrity-title"><span class="integrity-helm" aria-hidden="true">⎈</span>Bitcoin's Hull Integrity</h2>
       <span class="stale-tag" data-integrity-stale hidden>STALE</span>
       <span class="pill pill-good" data-integrity-verdict><span class="dot"></span><span data-integrity-verdict-label>SOLID</span></span>
-      <span class="bar integrity-bar"><span class="bar-fill" data-integrity-bar style="width:92%"></span></span>
+      <span class="bar integrity-bar"><span class="bar-fill" data-integrity-bar style="width:0"></span></span>
       <span class="integrity-score"><span class="val" data-integrity-score>—</span><span class="integrity-outof">/100</span></span>
       <span class="integrity-caret" aria-hidden="true">▾</span>
-      <span class="integrity-note">The hull — the body's health of the Bitcoin network. Five structural stats, 20% each, every one scored against its own three-year average.</span>
+      <span class="integrity-note">The Hull — the Bitcoin network's overall health status.</span>
     </summary>
     <div class="integrity-detail">
-      <p class="integrity-blurb">Each stat compares NOW against its own three-year average:
-        at or above the average scores the full 20, at half the average it scores 0, linear
-        between (sats per dollar runs inverted — lower is better). All five inputs are feed
-        data anchored on their own dates, so a stalled feed freezes its stat rather than
-        letting it drift. The rows below always sum to the headline.</p>
+      <p class="integrity-blurb">A combined reading of five structural metrics, each measured
+        against its own three-year average, gives the Hull Integrity score:</p>
       <div class="rows">
-        <div class="row"><span>Nodes — est. total vs 3-yr avg <span class="int-cmp" data-int-nodes-cmp></span></span><span class="val" data-int-nodes>—</span></div>
-        <div class="row"><span>Hash power — current vs 3-yr avg <span class="int-cmp" data-int-hash-cmp></span></span><span class="val" data-int-hash>—</span></div>
-        <div class="row"><span>Transactions per day — vs 3-yr avg <span class="int-cmp" data-int-tx-cmp></span></span><span class="val" data-int-tx>—</span></div>
-        <div class="row"><span>Sats per dollar — vs 3-yr avg, lower is better <span class="int-cmp" data-int-sats-cmp></span></span><span class="val" data-int-sats>—</span></div>
-        <div class="row"><span>UTXO-set growth — past year vs 3-yr avg <span class="int-cmp" data-int-utxo-cmp></span></span><span class="val" data-int-utxo>—</span></div>
+        <div class="row"><span>Node count (est.)</span></div>
+        <div class="row"><span>Hash power</span></div>
+        <div class="row"><span>Transactions per day</span></div>
+        <div class="row"><span>Sats per dollar (lower is better)</span></div>
+        <div class="row"><span>UTXO-set growth</span></div>
       </div>
     </div>
   </details>
@@ -274,7 +271,7 @@
 <footer class="hull-footer">
   <span>data: <a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> · <a href="https://github.com/abysal32-arch/bitcoinhull" target="_blank" rel="noopener">GitHub</a> · v1.0.0</span>
   <span>vanilla HTML/CSS/JS · zero build · zero trackers</span>
-  <span class="foot-credit">Huge love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
+  <span class="foot-credit">Much love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>
 
 <script src="js/format.js"></script>

@@ -12,9 +12,11 @@
    (ratio − 0.5)/0.5 — at half the 3-yr average → 0, at-or-above the
    average → full 20. All inputs are FEED-derived (averages anchored on
    the data's own dates, never the wall clock), so a stalled feed freezes
-   its stat instead of drifting. The score is the SUM OF THE ROUNDED rows
-   so the breakdown always adds up; any missing input → that row AND the
-   headline dash (no fabricated totals). */
+   its stat instead of drifting. Per-stat points are ROUNDED before
+   summing (kept from the row-display era so the composition — and the
+   live score — stays identical; the dropdown now lists the metrics
+   without numbers, Joe 2026-07-18). Any missing input → the headline
+   dash (no fabricated totals). */
 (function () {
   'use strict';
 
@@ -53,13 +55,6 @@
   var barEl = panel.querySelector('[data-integrity-bar]');
   var verdictEl = panel.querySelector('[data-integrity-verdict]');
   var verdictLabel = panel.querySelector('[data-integrity-verdict-label]');
-  var rowEls = {
-    nodes: { val: panel.querySelector('[data-int-nodes]'), cmp: panel.querySelector('[data-int-nodes-cmp]') },
-    hash:  { val: panel.querySelector('[data-int-hash]'),  cmp: panel.querySelector('[data-int-hash-cmp]') },
-    tx:    { val: panel.querySelector('[data-int-tx]'),    cmp: panel.querySelector('[data-int-tx-cmp]') },
-    sats:  { val: panel.querySelector('[data-int-sats]'),  cmp: panel.querySelector('[data-int-sats-cmp]') },
-    utxo:  { val: panel.querySelector('[data-int-utxo]'),  cmp: panel.querySelector('[data-int-utxo-cmp]') }
-  };
 
   function setVal(el, text) {
     el.textContent = text;
@@ -87,52 +82,49 @@
     return bestD <= tolS ? best : NaN;
   }
 
-  /* {pts, cmp} for a healthy stat, or null while an input is missing */
+  /* points /20 for a healthy stat, NaN while an input is missing */
   function compNodes() {
     var v = store.get('nodes');
-    if (!v || bad(v.total) || !v.rows || v.rows.length < 90) return null;
+    if (!v || bad(v.total) || !v.rows || v.rows.length < 90) return NaN;
     var from = v.ts - 3 * YEAR_S;
     var sum = 0, n = 0;
     for (var i = 0; i < v.rows.length; i++) {
       var r = v.rows[i];
       if (r && !bad(r.total) && r.ts >= from) { sum += r.total; n += 1; }
     }
-    if (n < 90) return null;
+    if (n < 90) return NaN;
     var avg = sum / n;
-    return avg > 0 ? { pts: ratioPts(v.total / avg),
-                       cmp: fmt.int(v.total) + ' vs ' + fmt.int(avg) + ' avg' } : null;
+    return avg > 0 ? ratioPts(v.total / avg) : NaN;
   }
 
   function compHash() {
     var hr = (store.get('hashrate') || {}).currentHashrate;
     var h3y = store.get('hashrate3y');
     var series = h3y && h3y.hashrates;
-    if (bad(hr) || hr < 0 || !series || series.length < 300) return null;
+    if (bad(hr) || hr < 0 || !series || series.length < 300) return NaN;
     var sum = 0, n = 0;
     for (var i = 0; i < series.length; i++) {
       var p = series[i];
       if (p && !bad(p.avgHashrate)) { sum += p.avgHashrate; n += 1; }
     }
-    if (n < 300) return null;
+    if (n < 300) return NaN;
     var avg = sum / n;
-    return avg > 0 ? { pts: ratioPts(hr / avg),
-                       cmp: fmt.ehs(hr) + ' vs ' + fmt.ehs(avg) + ' EH/s avg' } : null;
+    return avg > 0 ? ratioPts(hr / avg) : NaN;
   }
 
   function compTx() {
     var s = store.get('txSeries');
     var vals = s && s.values;
-    if (!vals || vals.length < 100) return null;
+    if (!vals || vals.length < 100) return NaN;
     var cur = vals[vals.length - 1] && vals[vals.length - 1].y;
-    if (bad(cur)) return null;
+    if (bad(cur)) return NaN;
     var sum = 0, n = 0;
     for (var i = 0; i < vals.length; i++) {
       if (vals[i] && !bad(vals[i].y)) { sum += vals[i].y; n += 1; }
     }
-    if (n < 100) return null;
+    if (n < 100) return NaN;
     var avg = sum / n;
-    return avg > 0 ? { pts: ratioPts(cur / avg),
-                       cmp: fmt.int(cur) + ' vs ' + fmt.int(avg) + ' avg' } : null;
+    return avg > 0 ? ratioPts(cur / avg) : NaN;
   }
 
   /* LOWER is better (Joe): sats/$ falls as price rises — invert the ratio */
@@ -140,26 +132,25 @@
     var usd = (store.get('prices') || {}).USD;
     var s = store.get('priceSeries');
     var vals = s && s.values;
-    if (bad(usd) || usd <= 0 || !vals || vals.length < 100) return null;
+    if (bad(usd) || usd <= 0 || !vals || vals.length < 100) return NaN;
     var cur = 1e8 / usd;
     var sum = 0, n = 0;
     for (var i = 0; i < vals.length; i++) {
       var p = vals[i];
       if (p && !bad(p.y) && p.y > 0) { sum += 1e8 / p.y; n += 1; }
     }
-    if (n < 100) return null;
+    if (n < 100) return NaN;
     var avg = sum / n;
-    return cur > 0 ? { pts: ratioPts(avg / cur),
-                       cmp: fmt.int(cur) + ' vs ' + fmt.int(avg) + ' sats avg' } : null;
+    return cur > 0 ? ratioPts(avg / cur) : NaN;
   }
 
   /* past-year growth vs the mean of the 3 PRIOR yearly growth rates */
   function compUtxo() {
     var s = store.get('utxoSeries');
     var vals = s && s.values;
-    if (!vals || vals.length < 100) return null;
+    if (!vals || vals.length < 100) return NaN;
     var lastP = vals[vals.length - 1];
-    if (!lastP || bad(lastP.x) || bad(lastP.y)) return null;
+    if (!lastP || bad(lastP.x) || bad(lastP.y)) return NaN;
     var TOL = 45 * 86400;
     var y = [lastP.y];
     for (var k = 1; k <= 4; k++) y.push(seriesAt(vals, lastP.x - k * YEAR_S, TOL));
@@ -168,13 +159,12 @@
       if (bad(y[j]) || bad(y[j + 1]) || y[j + 1] <= 0) g.push(NaN);
       else g.push((y[j] - y[j + 1]) / y[j + 1]);
     }
-    if (bad(g[0]) || bad(g[1]) || bad(g[2]) || bad(g[3])) return null;
+    if (bad(g[0]) || bad(g[1]) || bad(g[2]) || bad(g[3])) return NaN;
     var baseline = (g[1] + g[2] + g[3]) / 3;
     /* a non-positive historical baseline can't anchor a ratio — score on
        the sign of current growth alone */
     var r = baseline > 0 ? g[0] / baseline : (g[0] >= 0 ? 1 : 0);
-    return { pts: ratioPts(r),
-             cmp: fmt.pct(g[0] * 100) + ' vs ' + fmt.pct(baseline * 100) + ' avg/yr' };
+    return ratioPts(r);
   }
 
   function bandFor(score) {
@@ -202,26 +192,12 @@
   }
 
   function renderAll() {
-    var parts = [
-      { el: rowEls.nodes, c: compNodes() },
-      { el: rowEls.hash,  c: compHash()  },
-      { el: rowEls.tx,    c: compTx()    },
-      { el: rowEls.sats,  c: compSats()  },
-      { el: rowEls.utxo,  c: compUtxo()  }
-    ];
+    var pts = [compNodes(), compHash(), compTx(), compSats(), compUtxo()];
 
     var score = 0, missing = false;
-    for (var i = 0; i < parts.length; i++) {
-      var p = parts[i];
-      if (!p.c || bad(p.c.pts)) {
-        missing = true;
-        setVal(p.el.val, DASH);
-        p.el.cmp.textContent = '';
-      } else {
-        score += Math.round(p.c.pts); /* fmt.int rounds the same way below */
-        setVal(p.el.val, fmt.int(p.c.pts) + '/20');
-        p.el.cmp.textContent = p.c.cmp;
-      }
+    for (var i = 0; i < pts.length; i++) {
+      if (bad(pts[i])) missing = true;
+      else score += Math.round(pts[i]);
     }
 
     if (missing) {
