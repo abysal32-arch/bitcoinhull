@@ -234,6 +234,16 @@ js/main.js          boot: start polls, init panels      (task 02+)
 tasks/              this system
 ```
 
+## The brand ship (task 20 — do not redraw casually)
+
+Inline SVG in the header (`.brand-ship`, 58×31, right of the wordmark).
+Iterated with Joe in-chat 2026-07-18; the load-bearing details are
+DELIBERATE: ₿-21 hull number = the 21M cap; the armor-belt stencil is
+the first 32 chars of the GENESIS BLOCK hash (SHA-256 easter egg); ₿ on
+the pennant; the watertight hull is the only solid-orange element. The
+favicon is the hull+₿ (data-URI in index.html). Change only on Joe's
+word.
+
 ## Design tokens (locked in task 01 — do not re-derive)
 
 Dark-only. Defined in `:root` of `css/style.css`:

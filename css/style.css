@@ -72,6 +72,10 @@ body {
 }
 .wordmark b { color: var(--ink); font-weight: 700; }
 
+/* the brand ship sails to the RIGHT of the wordmark (task 20, Joe) */
+.brand { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.brand-ship { width: 58px; height: 31px; flex: none; }
+
 .header-right {
   display: flex;
   align-items: baseline;
