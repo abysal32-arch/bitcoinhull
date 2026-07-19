@@ -189,7 +189,13 @@
     if (!lastP || bad(lastP.x) || bad(lastP.y)) return null;
 
     var TOL_EPOCH = 4 * 86400, TOL_3Y = 45 * 86400;
-    var tsEpoch = hist.tsAtHeight(tip.height - 2016);
+    /* BOTH window edges anchor on the series' OWN newest point, never the
+       live tip: a stalled feed must FREEZE this row, and a live-tip anchor
+       walks the lookback toward the frozen endpoint (shrinking the window
+       to zero and inflating the score for ~2 weeks before it dashes) */
+    var hLast = hist.heightAtTs(lastP.x);
+    if (hLast == null) return null;
+    var tsEpoch = hist.tsAtHeight(hLast - 2016);
     if (tsEpoch == null) return null;
     var uEpoch = seriesAt(vals, tsEpoch, TOL_EPOCH);
     if (bad(uEpoch) || uEpoch <= 0) return null;
@@ -197,9 +203,9 @@
 
     var u3y = seriesAt(vals, lastP.x - 3 * YEAR_S, TOL_3Y);
     if (bad(u3y) || u3y <= 0) return null;
-    var h3y = hist.heightAtTs(tip.timestamp - 3 * YEAR_S);
-    if (h3y == null || tip.height - h3y <= 0) return null;
-    var epochs = (tip.height - h3y) / 2016;
+    var h3y = hist.heightAtTs(lastP.x - 3 * YEAR_S);
+    if (h3y == null || hLast - h3y <= 0) return null;
+    var epochs = (hLast - h3y) / 2016;
     var gAvg = ((lastP.y - u3y) / u3y) / epochs;
 
     var pts;

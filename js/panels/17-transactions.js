@@ -58,6 +58,9 @@
   function staleSeconds() {
     var worst = 0;
     for (var i = 0; i < FEEDS.length; i++) {
+      /* txTotal only backs the hero while Blockchair is fresh — a stale
+         fallback nobody sees must not tag the panel */
+      if (FEEDS[i].key === 'txTotal' && chairTx() != null) continue;
       var age = store.age(FEEDS[i].key);
       if (isFinite(age) && age > 2 * FEEDS[i].intervalS && age > worst) worst = age;
     }
@@ -88,10 +91,21 @@
       }
       if (ok) {
         count = sum;
-        /* each x stamps the START of its day — the window runs to lastX+1d */
-        spanS = vals[vals.length - 1].x + DAY_S - vals[0].x;
+        /* each x stamps the START of its day — the window runs to lastX+1d,
+           CLAMPED to the tip when the newest point is the in-progress day
+           (heightAtTs refuses to extrapolate past the tip; charging the
+           partial day in full would under-rate and dash avg/block) */
+        var endTs = vals[vals.length - 1].x + DAY_S;
+        hEnd = hist.heightAtTs(endTs);
+        if (hEnd == null) {
+          var tipH = store.get('tipHeight');
+          var tipTs = bad(tipH) ? null : hist.tsAtHeight(tipH);
+          if (tipTs != null && endTs > tipTs && tipTs > vals[0].x) {
+            hEnd = tipH; endTs = tipTs;
+          }
+        }
+        spanS = endTs - vals[0].x;
         hStart = hist.heightAtTs(vals[0].x);
-        hEnd = hist.heightAtTs(vals[vals.length - 1].x + DAY_S);
       }
     }
     setVal(countEl, fmt.int(count));

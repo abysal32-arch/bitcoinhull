@@ -52,9 +52,22 @@
     return bad(y) ? NaN : y;
   }
 
+  /* a stale fallback chart nobody is looking at must not STALE-tag the
+     panel while its fresh twin drives the row; the tag returns the moment
+     the fresh feed ages out and the fallback actually shows */
+  function fallbackCovered(key) {
+    if (key === 'utxoSeries') return !bad(freshY('utxoHourly', 1800));
+    if (key === 'chainSize') {
+      var c = store.get('chairStats'), a = store.age('chairStats');
+      return !!(c && !bad(c.sizeBytes) && isFinite(a) && a <= 2 * 900);
+    }
+    return false;
+  }
+
   function staleSeconds() {
     var worst = 0;
     for (var i = 0; i < FEEDS.length; i++) {
+      if (fallbackCovered(FEEDS[i].key)) continue;
       var age = store.age(FEEDS[i].key);
       if (isFinite(age) && age > 2 * FEEDS[i].intervalS && age > worst) worst = age;
     }

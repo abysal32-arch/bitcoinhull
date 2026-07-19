@@ -410,6 +410,11 @@ details.integrity { padding: 0; }
   font-weight: 700;
   letter-spacing: 0.1em;
   color: var(--warn);
+  /* pill boundary: amber-on-orange hue contrast alone is ~1.25:1 since the
+     panel titles went accent — the box is what reads as "tag" now */
+  background: rgba(250, 178, 25, 0.14);
+  padding: 1px 5px;
+  border-radius: 3px;
 }
 .loading { color: var(--ink-mut); }
 .val.loading, .panel-side .val.loading { color: var(--ink-mut); font-weight: 400; }
