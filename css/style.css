@@ -491,4 +491,19 @@ details.integrity { padding: 0; }
   .row { font-size: 12.5px; }
   .panel-head h2 { font-size: 11px; }
   .hero-sub { font-size: 11.5px; }
+  /* single-column read order (Joe, 2026-07-19) — visual only, the DOM keeps
+     the desktop order; integrity stays first at its default order:0 */
+  #panel-price        { order: 1; }
+  #panel-mining       { order: 2; }
+  #panel-nodes        { order: 3; }
+  #panel-blockchain   { order: 4; }
+  #panel-supply       { order: 5; }
+  #panel-halving      { order: 6; }
+  #panel-mempool      { order: 7; }
+  #panel-fees         { order: 8; }
+  #panel-retarget     { order: 9; }
+  #panel-transactions { order: 10; }
+  #panel-lightning    { order: 11; }
+  #panel-treasuries   { order: 12; }
+  #panel-chain        { order: 13; }
 }
