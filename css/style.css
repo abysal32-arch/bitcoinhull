@@ -60,11 +60,11 @@ body {
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
-  padding: 0 2px 6px;
+  padding: 0 2px 3px;
 }
 
 .wordmark {
-  font-size: 17px;
+  font-size: 26px;
   letter-spacing: 0.14em;
   color: var(--ink-2);
   font-weight: 400;
@@ -73,9 +73,10 @@ body {
 .wordmark b { color: var(--ink); font-weight: 700; }
 
 /* the brand ship sails to the RIGHT of the wordmark (task 20, Joe;
-   upsized task 21 — "definitely bigger") */
-.brand { display: flex; align-items: center; gap: 14px; min-width: 0; }
-.brand-ship { width: 88px; height: 47px; flex: none; }
+   upsized task 21, +50% again task 26 — name 26px, ship 132px; the
+   SVG viewBox is cropped to the artwork so the box stays short) */
+.brand { display: flex; align-items: center; gap: 16px; min-width: 0; }
+.brand-ship { width: 132px; height: 63px; flex: none; }
 
 .header-right {
   display: flex;
@@ -133,7 +134,7 @@ body {
 .grid {
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  gap: 6px;
+  gap: 5px;
 }
 
 .span-12 { grid-column: span 12; }
@@ -143,7 +144,7 @@ body {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 5px 10px 6px;
+  padding: 5px 10px 5px;
   min-width: 0;
 }
 
@@ -236,7 +237,7 @@ details.integrity { padding: 0; }
   align-items: center;
   flex-wrap: wrap; /* the note wraps to its own line under the bar */
   gap: 14px;
-  padding: 6px 14px;
+  padding: 5px 14px;
   cursor: pointer;
   list-style: none;
 }
@@ -329,7 +330,7 @@ details.integrity { padding: 0; }
   background: var(--surface-2);
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-  padding: 4px 7px;
+  padding: 3px 7px;
 }
 
 .bt-height {
@@ -337,12 +338,12 @@ details.integrity { padding: 0; }
   font-weight: 700;
   color: var(--ink);
   font-variant-numeric: tabular-nums;
-  margin-bottom: 3px;
+  margin-bottom: 2px;
 }
 .bt-line { font-size: 10.5px; color: var(--ink-mut); line-height: 1.5; }
 .bt-line .val { color: var(--ink-2); font-weight: 600; }
 .bt-age {
-  margin-top: 3px;
+  margin-top: 2px;
   font-size: 10px;
   color: var(--ink-mut);
 }
@@ -472,6 +473,9 @@ details.integrity { padding: 0; }
   .span-4 { grid-column: span 12; }
   body { padding: 14px 12px 20px; }
   .tip-num { font-size: 22px; }
+  /* task 26: the upsized brand must still fit a 375px header line */
+  .wordmark { font-size: 20px; }
+  .brand-ship { width: 100px; height: 48px; }
   .panel-side { white-space: normal; text-align: right; }
   .block-tile { flex: 0 0 92px; }
   .integrity summary { flex-wrap: wrap; gap: 10px; }
