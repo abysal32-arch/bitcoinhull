@@ -66,7 +66,7 @@ body {
 .wordmark {
   font-size: 26px;
   letter-spacing: 0.14em;
-  color: var(--ink-2);
+  color: var(--accent);
   font-weight: 400;
   white-space: nowrap;
 }
@@ -161,7 +161,7 @@ body {
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-mut);
+  color: var(--accent);
 }
 
 .panel-side { font-size: 12.5px; color: var(--ink-mut); white-space: nowrap; }
@@ -257,11 +257,12 @@ details.integrity { padding: 0; }
   font-weight: 700;
   letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--ink-2);
+  color: var(--ink);
   white-space: nowrap;
 }
 
 .integrity-helm { color: var(--accent); font-size: 15px; margin-right: 7px; vertical-align: -1px; }
+.integrity-brand { color: var(--accent); }
 
 /* the hull gauge: taller track, inset depth, notches at the verdict-band
    thresholds (40/65/85 — decoration only, the pill carries the verdict),
