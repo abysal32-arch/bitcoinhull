@@ -41,6 +41,17 @@
     return { ts: last.ts, listening: last.listening, total: last.total, rows: rows };
   }
 
+  /* task 28: TWO polls feed the 'nodes' store key — Luke's own origin
+     (browser-dead today: doubled ACAO header; kept armed to self-heal) and
+     the bitcoin-data nightly GitHub mirror of the same file, which lags the
+     origin by up to ~a day. Whichever answers, an older newest-row must
+     never regress a newer one (also protects a fresh row against the boot
+     bake re-seeding order). */
+  function acceptNodes(nv, cur) {
+    return !(cur && nv && typeof cur.ts === 'number' && typeof nv.ts === 'number' &&
+             nv.ts < cur.ts);
+  }
+
   /* task 17: CoinGecko treasuries payload -> the small shape the minor
      card needs. A missing total throws so the poll records a failure
      instead of storing junk. */
@@ -82,7 +93,16 @@
     ['difficulty',    '/api/v1/difficulty-adjustment', 'difficulty',    300000],
     ['hashrate',      '/api/v1/mining/hashrate/3d',    'hashrate',      300000],
     ['nodes',         'https://luke.dashjr.org/programs/bitcoin/files/charts/data/history.txt',
-                                                       'nodes',       21600000, null,
+                                                       'nodes',       21600000, acceptNodes,
+                                                       { parse: parseNodes, aux: true, backoffCapMs: 3600000 }],
+    /* task 28: nightly GitHub-Actions mirror of the SAME file (bitcoin-data/
+       bitcoin-stats-archive, luke-jr branch). raw.githubusercontent.com sends
+       exactly ONE ACAO header, so unlike Luke's origin this one reaches real
+       browsers (fetched in-page from the bitcoinhull.com origin, 2026-07-20)
+       — turns the monthly node bake into a live daily feed; the bake stays
+       as the boot floor and Luke's direct poll stays armed above. */
+    ['nodesMirror',   'https://raw.githubusercontent.com/bitcoin-data/bitcoin-stats-archive/luke-jr/history.txt',
+                                                       'nodes',       21600000, acceptNodes,
                                                        { parse: parseNodes, aux: true, backoffCapMs: 3600000 }],
     /* task 15 (Clark expansion, 2026-07-17): slow-moving 6 h feeds. ALL are
        aux — none of them is the page's live pulse, so none may flip the conn
