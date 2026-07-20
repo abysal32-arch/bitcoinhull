@@ -1,0 +1,46 @@
+# Monthly nodes boot-floor re-bake (task 30): runs scripts/bake-nodes.sh
+# (Luke direct, bitcoin-data mirror fallback), sanity-checks the generated
+# file, and commits only when it changed. Replaces the manual bake sitting.
+# A failed run = both sources unfetchable or an insane file — nothing is
+# committed and the failure notifies the repo owner.
+name: bake-refresh
+on:
+  schedule:
+    - cron: '23 3 1 * *'   # 1st of the month, 03:23 UTC
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: bake-refresh
+jobs:
+  bake:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: re-bake the nodes boot floor
+        run: bash scripts/bake-nodes.sh
+      - name: sanity-check the generated file
+        run: |
+          node -e "
+            global.window = {};
+            require('./js/data/nodes.js');
+            const b = global.window.HULL.baked.nodes;
+            const last = b.rows[b.rows.length - 1];
+            const ageDays = (Date.now() / 1000 - last[0]) / 86400;
+            if (!b.asOf || b.rows.length < 3000 || !(ageDays < 8)) {
+              console.error('sanity FAILED:', b.asOf, b.rows.length, 'rows, newest', ageDays, 'd old');
+              process.exit(1);
+            }
+            console.log('sane:', b.asOf, b.rows.length, 'rows, newest', ageDays.toFixed(1), 'd old');
+          "
+      - name: commit if changed
+        run: |
+          if ! git diff --quiet js/data/nodes.js; then
+            git config user.name 'bake-refresh'
+            git config user.email 'bake-refresh@users.noreply.github.com'
+            git add js/data/nodes.js
+            git commit -m 'bake-refresh: monthly nodes boot-floor re-bake'
+            git pull --rebase origin master
+            git push
+          else
+            echo 'bake unchanged — nothing to commit'
+          fi

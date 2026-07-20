@@ -1,0 +1,34 @@
+# Daily origin watchdog (task 30): probes the nodes + Lightning watch items
+# and notifies (via a deliberately-failed run) ONLY on state change. The
+# state lives in .github/origin-watch/state.txt, committed only when it
+# moves — quiet days leave no trace but a green run.
+name: origin-watch
+on:
+  schedule:
+    - cron: '17 6 * * *'   # daily 06:17 UTC — after the mirror's ~02:35Z commit
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency: origin-watch
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: probe origins
+        id: probe
+        run: bash scripts/origin-watch.sh
+        continue-on-error: true
+      - name: persist state on change
+        run: |
+          if [ -n "$(git status --porcelain .github/origin-watch)" ]; then
+            git config user.name 'origin-watch'
+            git config user.email 'actions@users.noreply.github.com'
+            git add .github/origin-watch
+            git commit -m 'origin-watch: state change'
+            git pull --rebase origin master
+            git push
+          fi
+      - name: fail on change (this failure IS the notification)
+        if: steps.probe.outcome == 'failure'
+        run: exit 1

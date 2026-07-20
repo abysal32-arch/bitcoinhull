@@ -1,0 +1,9 @@
+luke_acao=2
+mirror=OK
+virtu_last=2025-11-04
+btcnodes_acao=0
+hacknodes_acao=0
+emzy=OK
+guide=OK
+space_added=2026-06-16
+bitcoinvisuals_acao=0
