@@ -110,6 +110,16 @@
        (CORS verified: exactly one ACAO header with cors=true). */
     ['lightning',     '/api/v1/lightning/statistics/latest',
                                                        'lightning',   21600000, null, { aux: true }],
+    /* task 28: mempool.space's LN statistics pipeline has been stalled since
+       mid-June 2026 (its snapshot even regressed 06-18 -> 06-16); Emzy's
+       public instance runs the identical API with a healthy DAILY indexer
+       (ACAO ×1 + in-page fetch from the bitcoinhull.com origin, 2026-07-20).
+       The panel shows whichever feed carries the newest dated snapshot (see
+       15-lightning.js); this key must never join a panel's stale FEEDS —
+       its death silently falls back to the mempool.space snapshot. */
+    ['lightningFresh','https://mempool.emzy.de/api/v1/lightning/statistics/latest',
+                                                       'lightningFresh', 21600000, null,
+                                                       { aux: true, backoffCapMs: 3600000 }],
     ['diffHistory',   '/api/v1/mining/difficulty-adjustments',
                                                        'diffHistory', 21600000, null, { aux: true }],
     ['hashrate3y',    '/api/v1/mining/hashrate/3y',

@@ -184,6 +184,10 @@ body {
 .hero-unit { font-size: 10.5px; color: var(--ink-mut); font-weight: 500; }
 .hero-cur  { align-self: flex-start; margin-top: 3px; }
 .hero-sub  { font-size: 10px; color: var(--ink-mut); margin-bottom: 0; }
+/* task 28: a hero-sub may carry a courtesy-credit link (lightning panel) —
+   same muted treatment as .panel-credit a */
+.hero-sub a { color: var(--ink-2); text-decoration: none; }
+.hero-sub a:hover, .hero-sub a:focus-visible { text-decoration: underline; }
 
 /* ---------------- label/value rows ---------------- */
 

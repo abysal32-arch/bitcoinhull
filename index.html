@@ -253,7 +253,11 @@
   <section class="panel span-4" id="panel-lightning">
     <div class="panel-head"><h2>Lightning (public) <span class="stale-tag" data-lightning-stale hidden>STALE</span></h2></div>
     <div class="metric-hero"><span class="hero-num" data-lightning-cap>—</span><span class="hero-unit">BTC</span></div>
-    <div class="hero-sub">total public capacity · snapshot <span data-lightning-asof>—</span></div>
+    <!-- credit rides the hero-sub line (price-panel precedent) — a separate
+         .panel-credit line grew row 4 past the 940 fold contract (task 21).
+         The anchor is DYNAMIC: it names whichever feed the panel actually
+         renders (emzy fresh-preferred, mempool.space fallback — task 28) -->
+    <div class="hero-sub">total public capacity · snapshot <span data-lightning-asof>—</span> · <a data-lightning-src href="https://mempool.emzy.de" target="_blank" rel="noopener">emzy.de</a></div>
     <div class="rows">
       <div class="row"><span>Capacity value</span><span class="val" data-lightning-capusd>—</span></div>
       <div class="row"><span>Nodes</span><span class="val" data-lightning-nodes>—</span></div>
@@ -324,7 +328,7 @@
 </main>
 
 <footer class="hull-footer">
-  <span>data: <a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> +4 · <a href="https://github.com/abysal32-arch/bitcoinhull" target="_blank" rel="noopener">GitHub</a> · <a href="https://github.com/abysal32-arch/bitcoinhull/releases/tag/v1.2.0" target="_blank" rel="noopener">v1.2.0</a></span>
+  <span>data: <a href="https://mempool.space" target="_blank" rel="noopener">mempool.space</a> +6 · <a href="https://github.com/abysal32-arch/bitcoinhull" target="_blank" rel="noopener">GitHub</a> · <a href="https://github.com/abysal32-arch/bitcoinhull/releases/tag/v1.2.0" target="_blank" rel="noopener">v1.2.0</a></span>
   <span>vanilla HTML/CSS/JS · zero build · zero trackers</span>
   <span class="foot-credit">Much love to <a href="https://bitcoin.clarkmoody.com/dashboard" target="_blank" rel="noopener">Clark Moody's Bitcoin Dashboard</a> — the original Bitcoin command point. This page exists because his did. 🧡</span>
 </footer>

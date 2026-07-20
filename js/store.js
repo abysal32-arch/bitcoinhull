@@ -15,8 +15,10 @@
               'vbps', /* task 14: socket-only incoming flow, vB/s */
               'txTotal', 'tx30d', 'treasuries', /* task 17: transactions
                 panel + the now-live CoinGecko treasuries feed */
-              'chairStats', 'utxoHourly' /* task 18: fresh-preferred live
-                scalars (Blockchair + hourly UTXO chart) */];
+              'chairStats', 'utxoHourly', /* task 18: fresh-preferred live
+                scalars (Blockchair + hourly UTXO chart) */
+              'lightningFresh' /* task 28: emzy's unstalled LN statistics —
+                fresh-preferred over the mempool.space snapshot */];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */
