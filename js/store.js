@@ -17,8 +17,10 @@
                 panel + the now-live CoinGecko treasuries feed */
               'chairStats', 'utxoHourly', /* task 18: fresh-preferred live
                 scalars (Blockchair + hourly UTXO chart) */
-              'lightningFresh' /* task 28: emzy's unstalled LN statistics —
-                fresh-preferred over the mempool.space snapshot */];
+              'lightningFresh', /* task 28: emzy's unstalled LN statistics —
+                fresh-preferred over the mempool.space snapshot */
+              'lightningGuide' /* task 30: second fresh LN instance
+                (mempool.guide) — resilience below emzy in the tie-break */];
 
   var data = {}; /* key -> { value, updatedAt(ms) } */
   var subs = {}; /* key -> [fn] */

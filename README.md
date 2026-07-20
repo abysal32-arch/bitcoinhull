@@ -11,7 +11,7 @@ supply, the halving, and the **BitcoinHull Integrity** score (one honest
 
 - **Stack:** vanilla HTML/CSS/JS, zero build step, zero dependencies, zero trackers.
 - **Data:** [mempool.space](https://mempool.space) is the primary source (WebSocket
-  push + REST fallback) plus six audited aux origins, all keyless and fetched
+  push + REST fallback) plus seven audited aux origins, all keyless and fetched
   directly by your browser: [blockchain.info charts](https://api.blockchain.info)
   (UTXO count, chain size, historical baselines),
   [CoinGecko](https://www.coingecko.com) (corporate treasuries, hourly),
@@ -22,10 +22,12 @@ supply, the halving, and the **BitcoinHull Integrity** score (one honest
   [bitcoin-data mirror](https://github.com/bitcoin-data/bitcoin-stats-archive)
   on GitHub (Luke's own server sends a malformed CORS header no browser
   accepts; the nightly mirror fixes exactly that), and
-  [mempool.emzy.de](https://mempool.emzy.de) (Emzy's mempool instance, whose
-  Lightning indexer is healthy while mempool.space's has been stalled since
-  mid-June 2026 — the panel prefers whichever snapshot is newest and names
-  the one it shows). Aux origins never gate the connection verdict.
+  [mempool.emzy.de](https://mempool.emzy.de) and
+  [mempool.guide](https://mempool.guide) (two independent mempool instances
+  whose Lightning indexers are healthy while mempool.space's has been
+  stalled since mid-June 2026 — the panel renders whichever alive snapshot
+  is newest and names the one it shows). Aux origins never gate the
+  connection verdict.
 - **What can't be live (honestly):** the Lightning figures are a dated daily
   SNAPSHOT (the date is always shown); the node-count total is Luke's daily
   estimate, ~a day behind via the mirror, with a baked floor for cold boots.

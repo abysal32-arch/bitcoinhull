@@ -135,6 +135,15 @@
     ['lightningFresh','https://mempool.emzy.de/api/v1/lightning/statistics/latest',
                                                        'lightningFresh', 21600000, null,
                                                        { parse: parseLn, aux: true, backoffCapMs: 3600000 }],
+    /* task 30: second fresh LN instance — emzy alone was a single point of
+       freshness (its death would fall back to the ~5-week-stale
+       mempool.space snapshot). mempool.guide runs the same API, ACAO ×1,
+       snapshot dated today at wiring (operator unidentified — that is why
+       it ranks BELOW emzy in the panel's tie-break, and why it renders
+       only when it genuinely holds the newest alive snapshot). */
+    ['lightningGuide','https://mempool.guide/api/v1/lightning/statistics/latest',
+                                                       'lightningGuide', 21600000, null,
+                                                       { parse: parseLn, aux: true, backoffCapMs: 3600000 }],
     ['diffHistory',   '/api/v1/mining/difficulty-adjustments',
                                                        'diffHistory', 21600000, null, { aux: true }],
     ['hashrate3y',    '/api/v1/mining/hashrate/3y',
