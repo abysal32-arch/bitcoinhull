@@ -41,7 +41,7 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
 | `/api/v1/difficulty-adjustment` | `{progressPercent,difficultyChange,estimatedRetargetDate,remainingBlocks,remainingTime,nextRetargetHeight,timeAvg}` | 5 min |
 | `/api/v1/mining/hashrate/3d` | `{currentHashrate,currentDifficulty}` (H/s, raw) | 5 min |
 | WS `wss://mempool.space/api/v1/ws` | send `{"action":"want","data":["blocks","stats","mempool-blocks"]}` → dump on connect (`blocks` ASCENDING, unlike REST), then ~1 s pushes: `fees`/`mempoolInfo`/`mempool-blocks`/`da`/`vBytesPerSecond` (+ `block` per new block, `conversions` occasionally). `mempoolInfo` is bitcoind shape: `size`→count, `bytes`→vsize, `total_fee` in BTC (REST quotes sats — never map it). `vBytesPerSecond` = live incoming flow → store key `vbps` (task 14, 10 s throttle): SOCKET-ONLY, so the mempool panel's Incoming row shows a value ONLY while conn is `live` (dash otherwise, no REST fallback ever faked) and the row is EXCLUDED from the panel's stale-tag FEEDS — a dead socket with healthy REST must not tag the panel. `fmt.vbps` switches units (vB/s → kvB/s). | push (task 09) |
-| `/api/v1/lightning/statistics/latest` | `{latest:{added(ISO date!), channel_count, node_count, total_capacity(sats), tor_nodes, clearnet_nodes, unannounced_nodes,…}}` — a dated SNAPSHOT, observed ~a month behind; panels must show `added` visibly. NO capacity-by-network split exists (Tor capacity % is a named gap — we show Tor nodes instead). | 6 h (task 15) |
+| `/api/v1/lightning/statistics/latest` | `{latest:{added(ISO date!), channel_count, node_count, total_capacity(sats), tor_nodes, clearnet_nodes, unannounced_nodes,…}}` — a dated SNAPSHOT; mempool.space's own indexer is STALLED (since mid-June 2026, snapshot even regressed 06-18→06-16) so this key is the FALLBACK: task 28 polls the identical API on mempool.emzy.de as `lightningFresh` and the panel renders whichever alive feed has the newest `added` (see Sixth/seventh origins below). Panels must show `added` visibly. NO capacity-by-network split exists (Tor capacity % is a named gap — we show Tor nodes instead). | 6 h (task 15) |
 | `/api/v1/mining/difficulty-adjustments` | full retarget history `[[ts, height, difficulty, changePct],…]` NEWEST-FIRST, ~28 KB — powers `HULL.hist` (chain work, implied hashrates, block-time windows, height↔time interpolation) | 6 h (task 15) |
 | `/api/v1/mining/hashrate/3y` | `{hashrates:[{timestamp, avgHashrate}], currentHashrate, currentDifficulty}` daily, chronological — 90-day avg + Integrity's 3-year baseline | 6 h (task 15) |
 | `/api/v1/difficulty-adjustment` extra fields (task 15) | `previousRetarget` (last change %), `timeAvg` (ms, realized epoch block time), `estimatedRetargetDate` (MILLISECONDS) — all in the payload task 07 already polls | — |
@@ -95,24 +95,37 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
   (which stays untouched — Integrity's baseline still reads ONLY the
   4y series).
 
-### Live-source verdicts (task-18 research, 2026-07-18 — don't re-derive)
+### Live-source verdicts (task-28 hunt, 2026-07-20 — SUPERSEDES task 18's; don't re-derive)
 
-- **Node count: NO shippable live source exists.** bitnodes.io domain
-  EXPIRED 2026-05-03 (NXDOMAIN); coin.dance/nodes froze days later
-  (fed by bitnodes, inferred); Blockchair's field is a non-metric;
-  bitnod.es (BitMEX's replacement, ~28k) has NO public API; the two
-  real crawlers alive today BOTH lack CORS: pesquisa.hacknodes.xyz
-  (alt-bitnodes revival, sub-hourly, total ~11k reachable, service
-  hours old) and KIT DSN (academic, daily since 2015, 6.8 MB raw
-  dossier). Luke's baked estimate stays; CORS-request email drafts for
-  hacknodes + bitcoinvisuals live in the task-18 folder (Joe sends).
-- **Lightning: mempool.space's ~month-old snapshot is the best
-  CORS-open option, period.** The stall is product-wide on their side
-  (their own /lightning page renders the same stale figures; 24h/3d/1w
-  interval endpoints return []). 1ml: no CORS + undatable. Amboss:
-  CORS allowlist (third-party origins cut off). bitcoinvisuals: the
-  freshest data anywhere (~1-2 days) but ZERO CORS + one 3.9 MB CSV —
-  flips to winner if they ever add a header.
+Task 28 hunted both gaps to exhaustion (8 researchers, ~120 probes, all
+finalists judged by a real in-browser fetch from the bitcoinhull.com
+origin — full log + verdict tables in `tasks/task-28-live-nodes-ln-hunt/
+WORKLOG.md`). BOTH stats are now live:
+
+- **Node count: LIVE-DAILY via the bitcoin-data GitHub mirror** of Luke's
+  history.txt (`raw.githubusercontent.com/bitcoin-data/bitcoin-stats-archive/
+  luke-jr/history.txt` — ACAO ×1, nightly 00:00Z Actions cron, commit
+  ~02:30Z, row ≤ ~26.5 h old; same file → same parser). Runner-up PASS:
+  willcl-ark.github.io/dnsseedrs data.json (GitHub Pages, ~6 h fresh) but a
+  DIFFERENT metric (DNS-seed crawl). Best CORS-ask target found:
+  **btcnodes.io** (real-time bitnodes successor, `ratelimit-remaining:
+  unlimited`, zero ACAO — one header from best-in-class; draft in the
+  task-28 folder). Still no CORS: hacknodes, KIT DSN, census.yonson.dev,
+  IMDEA (15-min fresh academic crawl, Dash-app only). bitcoin-data/
+  virtu-p2p-metrics has the PERFECT csv schema but froze 2025-11-04 —
+  recheck monthly, instant top pick if its feeder restarts.
+- **Lightning: FRESH via mempool.emzy.de** (`lightningFresh` poll,
+  identical mempool API, daily indexer confirmed two ways, operator =
+  Stephan Oeste/Emzy, ≥5 y of Bitcoin infra). mempool.space stays as the
+  silent fallback and self-heals to newest-snapshot-wins if it ever
+  recovers (its stall is instance-side: two independent public instances
+  index fine). Backup fresh instance if emzy dies: mempool.guide (fresh,
+  ACAO ×1, operator unidentified). Everything else failed: Bitfinex has
+  NO LN-aggregate endpoint and NO CORS host-wide (the "api-pub is
+  CORS-open" folklore is false); Amboss allowlists; Lightning Labs' live
+  API has no CORS; LnRouter's CORS-open graph.json is a 29 MB dump
+  (contingency only); bitcoinvisuals still zero ACAO (ask downgraded —
+  emzy covers the freshness need).
 
 ### Fourth origin (task 17): CoinGecko treasuries — LIVE
 
@@ -126,7 +139,42 @@ REST base `https://mempool.space` — CORS-open, no key. Endpoints:
   identical #1 holder): the retired task-13 bake (2.29M) matched NO
   current category — treat pre-task-17 treasuries history as suspect.
 
+### Sixth + seventh origins (task 28): emzy Lightning + bitcoin-data nodes mirror
+
+- `https://mempool.emzy.de/api/v1/lightning/statistics/latest` — poll
+  `lightningFresh` (store key `lightningFresh`, 6 h, aux, backoffCapMs 1 h).
+  Identical payload to the mempool.space endpoint above; Emzy's LN indexer
+  is healthy (daily snapshots) while mempool.space's is stalled. CONTRACT:
+  the lightning panel renders whichever ALIVE feed (fetch age ≤ 2× 21600 s)
+  carries the newest `added`; with nothing alive it renders the newest
+  stored snapshot under the stale tag. `lightningFresh` NEVER sits in any
+  panel's stale-tag FEEDS (chairStats rule: its death falls back silently);
+  the `lightning` key is SKIPPED in the FEEDS scan while the fresh feed
+  covers (task-23 covered-fallback rule). The visible snapshot date + a
+  dynamic `[data-lightning-src]` credit anchor (names the feed actually
+  rendered) are the honesty surface. Drill via
+  `HULL.api.setPath('lightningFresh', '<garbage>')`.
+- `https://raw.githubusercontent.com/bitcoin-data/bitcoin-stats-archive/luke-jr/history.txt`
+  — poll `nodesMirror` (store key `nodes` — SAME key as Luke's poll, same
+  `parseNodes`, 6 h, aux, backoffCapMs 1 h). A nightly GitHub-Actions
+  mirror of Luke's exact file (00:00Z cron, commit ~02:30Z → newest row
+  2.5–26.5 h old, comfortably inside the panel's 48 h stale bar); GitHub
+  raw serves exactly ONE ACAO header, so this poll is what actually
+  reaches browsers today. Both nodes polls carry `acceptNodes` (an older
+  newest-row never regresses a newer one), so if Luke ever fixes his
+  doubled header his ~2 h-fresher direct file wins automatically. The
+  task-12 bake stays as the boot floor only — the monthly re-bake sitting
+  is now belt-and-suspenders, not the data path. Drill via
+  `HULL.api.setPath('nodesMirror', '<garbage>')`.
+- jsDelivr mirrors the same branch but with a 12 h edge cache — use
+  GitHub raw (cache 300 s), not jsDelivr.
+
 ### Second origin (task 12): Luke Dashjr node counts
+
+⚠ UPDATE (task 28, 2026-07-20): the delivery path is now the bitcoin-data
+GitHub mirror above — the panel is LIVE-DAILY, not baked-monthly. Everything
+in this section (file format, parseNodes, col2+col3, 48 h stale rule, bake
+seed) still applies verbatim; only "no browser can fetch it" is obsolete.
 
 ⚠ RESOLUTION 2026-07-17 (researched to exhaustion, 12 agents, adversarially
 verified): Luke's server sends the ACAO header TWICE → every browser rejects
@@ -181,7 +229,10 @@ tag (task-13 rule: as-of IS the honesty for baked data).
   is the exact lie the contract forbids). Same rule inside Integrity: a
   baked feed value (`v.baked`) is exempt from the strip's fetch-age
   staleness — fetch age on a bake measures tab uptime, not data health.
-- Currently baked: ONLY `nodes` (the task-12 Luke fallback). Task 17
+- Currently baked: ONLY `nodes` (the task-12 Luke fallback — since task 28
+  it is the BOOT FLOOR only; the bitcoin-data mirror poll overwrites it
+  within seconds of load, so a visitor sees baked data only while offline
+  or before the first mirror response). Task 17
   (Joe, 2026-07-18) retired the other two: `treasuries` went LIVE via
   CoinGecko (above), and `opreturn` was DROPPED from the page — Joe
   vetoed baked-as-of labels, and 2026-07-18 research re-confirmed no
