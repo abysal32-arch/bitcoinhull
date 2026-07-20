@@ -139,21 +139,27 @@ WORKLOG.md`). BOTH stats are now live:
   identical #1 holder): the retired task-13 bake (2.29M) matched NO
   current category — treat pre-task-17 treasuries history as suspect.
 
-### Sixth + seventh origins (task 28): emzy Lightning + bitcoin-data nodes mirror
+### Sixth–eighth origins (tasks 28+30): Lightning fresh pool + bitcoin-data nodes mirror
 
-- `https://mempool.emzy.de/api/v1/lightning/statistics/latest` — poll
-  `lightningFresh` (store key `lightningFresh`, 6 h, aux, backoffCapMs 1 h).
-  Identical payload to the mempool.space endpoint above; Emzy's LN indexer
-  is healthy (daily snapshots) while mempool.space's is stalled. CONTRACT:
-  the lightning panel renders whichever ALIVE feed (fetch age ≤ 2× 21600 s)
-  carries the newest `added`; with nothing alive it renders the newest
-  stored snapshot under the stale tag. `lightningFresh` NEVER sits in any
-  panel's stale-tag FEEDS (chairStats rule: its death falls back silently);
-  the `lightning` key is SKIPPED in the FEEDS scan while the fresh feed
-  covers (task-23 covered-fallback rule). The visible snapshot date + a
-  dynamic `[data-lightning-src]` credit anchor (names the feed actually
-  rendered) are the honesty surface. Drill via
-  `HULL.api.setPath('lightningFresh', '<garbage>')`.
+- Lightning is a THREE-FEED POOL (task 30), preference-ordered for equal
+  `added` dates: `lightningFresh` = mempool.emzy.de (known operator),
+  `lightningGuide` = mempool.guide (operator unidentified — hence ranked
+  second), `lightning` = mempool.space (stalled fallback). All three run
+  the identical API; each 6 h, aux, backoffCapMs 1 h, `parseLn`-validated
+  (a 200 without a dated `latest` counts as a FAILED attempt — task 29).
+  CONTRACT: the panel renders whichever ALIVE feed (fetch age ≤ 2×
+  21600 s) carries the newest `added`, ties by pool order; with nothing
+  alive it renders the newest stored snapshot under the stale tag. The
+  fresh feeds NEVER sit in the panel's stale-tag FEEDS (chairStats rule:
+  a non-rendered fresh feed's death falls back silently); the `lightning`
+  key is SKIPPED in the FEEDS scan while a fresh feed covers (task-23
+  rule); the RENDERED feed's own fetch age is ALWAYS judged (task-28
+  review rule). The visible snapshot date + the dynamic
+  `[data-lightning-src]` credit anchor (names the feed actually rendered)
+  are the honesty surface. NOTE: each instance's own LN node sees a
+  slightly different gossip graph, so figures shift a little when the
+  rendered feed changes — inherent, disclosed by the credit. Drills:
+  `HULL.api.setPath('lightningFresh'|'lightningGuide', '<garbage>')`.
 - `https://raw.githubusercontent.com/bitcoin-data/bitcoin-stats-archive/luke-jr/history.txt`
   — poll `nodesMirror` (store key `nodes` — SAME key as Luke's poll, same
   `parseNodes`, 6 h, aux, backoffCapMs 1 h). A nightly GitHub-Actions
@@ -168,6 +174,15 @@ WORKLOG.md`). BOTH stats are now live:
   `HULL.api.setPath('nodesMirror', '<garbage>')`.
 - jsDelivr mirrors the same branch but with a 12 h edge cache — use
   GitHub raw (cache 300 s), not jsDelivr.
+- **Self-maintenance Actions (task 30)** — the repo watches its own
+  origins: `.github/workflows/origin-watch.yml` (daily 06:17Z, runs
+  `scripts/origin-watch.sh`, state in `.github/origin-watch/state.txt`
+  committed only on change; a RED run = a watch item flipped — Luke's
+  header, mirror freshness, emzy/guide/space snapshot ages, btcnodes/
+  hacknodes/bitcoinvisuals ACAO, the frozen virtu CSV — read the run's
+  step summary) and `.github/workflows/bake-refresh.yml` (monthly,
+  re-runs `scripts/bake-nodes.sh` + sanity gate, commits only on change
+  — the manual bake sitting is retired).
 
 ### Second origin (task 12): Luke Dashjr node counts
 
