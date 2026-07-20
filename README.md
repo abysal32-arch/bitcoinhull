@@ -41,5 +41,6 @@ supply, the halving, and the **BitcoinHull Integrity** score (one honest
 In the spirit of [Clark Moody's Bitcoin Dashboard](https://bitcoin.clarkmoody.com/dashboard) —
 fewer numbers, bigger type, honest states. Read-only: no wallet, no keys, ever.
 
-v1.2.0 · QA evidence in [`tasks/task-10-polish-ship/QA.md`](tasks/task-10-polish-ship/QA.md) ·
-v1.2 hardening evidence in [`tasks/task-23-v12-hardening/WORKLOG.md`](tasks/task-23-v12-hardening/WORKLOG.md)
+v1.3.0 · QA evidence in [`tasks/task-10-polish-ship/QA.md`](tasks/task-10-polish-ship/QA.md) ·
+v1.2 hardening evidence in [`tasks/task-23-v12-hardening/WORKLOG.md`](tasks/task-23-v12-hardening/WORKLOG.md) ·
+live-source hunt + probe log in [`tasks/task-28-live-nodes-ln-hunt/WORKLOG.md`](tasks/task-28-live-nodes-ln-hunt/WORKLOG.md)

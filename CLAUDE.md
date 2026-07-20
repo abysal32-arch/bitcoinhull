@@ -8,10 +8,12 @@ this repo.
 **Bitcoinhull** — a live Bitcoin dashboard in the spirit of Clark Moody's
 dashboard, rebuilt as "the Hull" (a command point): sleeker, more readable,
 fewer useless stats, a few new ones. Static site, vanilla HTML/CSS/JS, zero
-build step; mempool.space primary + 4 audited aux origins — blockchain.info
+build step; mempool.space primary + 6 audited aux origins — blockchain.info
 charts, CoinGecko, Blockchair (fragile, silent chart fallback), Luke Dashjr's
-node file (see `tasks/_SHARED.md` §Data sources). Read-only — no wallet, no
-keys, no funds, ever. Live at **bitcoinhull.com** (Joe owns the domain;
+node file both direct (browser-dead, self-heal armed) and via the
+bitcoin-data GitHub mirror (the live-daily path), and mempool.emzy.de
+Lightning fresh-preferred (see `tasks/_SHARED.md` §Data sources). Read-only —
+no wallet, no keys, no funds, ever. Live at **bitcoinhull.com** (Joe owns the domain;
 wired up in task 10).
 
 ## How to work (token-efficient boot)

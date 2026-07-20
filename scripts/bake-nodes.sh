@@ -1,30 +1,36 @@
 #!/usr/bin/env bash
-# Re-bake js/data/nodes.js from Luke Dashjr's live node-count history.
-# Run from the repo root on the monthly bake sitting (with the treasuries
-# and OP_RETURN refreshes), or any time; commit the result.
-# The live in-page poll supersedes this bake automatically whenever Luke's
-# CORS header is fixed — the bake just keeps the floor fresh.
+# Re-bake js/data/nodes.js from Luke Dashjr's node-count history.
+# Since task 28 the bake is the BOOT FLOOR only: the in-page nodesMirror
+# poll (bitcoin-data's nightly GitHub mirror, CORS-clean) overwrites it
+# within seconds of load, and Luke's direct poll stays armed on top. Run
+# on the periodic bake sitting or any time; commit the result.
+# Luke's origin is tried first (freshest); the mirror is the fallback so
+# the bake still refreshes even if his server is down entirely.
 set -euo pipefail
 
 URL='https://luke.dashjr.org/programs/bitcoin/files/charts/data/history.txt'
+MIRROR='https://raw.githubusercontent.com/bitcoin-data/bitcoin-stats-archive/luke-jr/history.txt'
 OUT='js/data/nodes.js'
 ASOF=$(date -u +%F)
 TMP=$(mktemp)
 
-curl -sf --max-time 60 "$URL" -o "$TMP"
-[ -s "$TMP" ] || { echo "empty fetch — aborting, $OUT untouched"; exit 1; }
+if ! curl -sf --max-time 60 "$URL" -o "$TMP" || [ ! -s "$TMP" ]; then
+  echo "luke.dashjr.org fetch failed — falling back to the bitcoin-data mirror"
+  curl -sf --max-time 60 "$MIRROR" -o "$TMP"
+fi
+[ -s "$TMP" ] || { echo "empty fetch from both sources — aborting, $OUT untouched"; exit 1; }
 
 awk -v asof="$ASOF" 'BEGIN{
-  print "/* Bitcoin Hull — baked data: Luke Dashjr node-count history (task 12).";
-  print "   FALLBACK ONLY: main.js seeds the store from this at boot, and the live";
-  print "   poll of luke.dashjr.org OVERWRITES it the moment his server serves a";
-  print "   single valid CORS header (today it sends Access-Control-Allow-Origin";
-  print "   twice, which every browser rejects — verified 2026-07-17, and no";
-  print "   alternative source with history exists: bitnodes.io is dead, Blockchair";
-  print "   counts only its own ~300 crawler connections, KIT DSN has no CORS).";
+  print "/* Bitcoin Hull — baked data: Luke Dashjr node-count history (task 12;";
+  print "   role reduced in task 28). BOOT FLOOR ONLY: main.js seeds the store";
+  print "   from this at boot, and the nodesMirror poll (bitcoin-data nightly";
+  print "   GitHub mirror of the same file, CORS-clean) overwrites it within";
+  print "   seconds — a visitor sees baked data only while offline. Luke\x27s own";
+  print "   origin still sends a doubled ACAO header (browser-dead; his direct";
+  print "   poll stays armed and wins if he ever fixes it).";
   print "   Rows are [unixTs, listening, total] with total = col2+col3 of his file";
   print "   (his own chart sums them — col3 alone is the non-listening estimate).";
-  print "   Refresh on the monthly bake sitting: scripts/bake-nodes.sh */";
+  print "   Refresh on the periodic bake sitting: scripts/bake-nodes.sh */";
   print "(function () {";
   print "  \x27use strict\x27;";
   print "  var HULL = window.HULL = window.HULL || {};";

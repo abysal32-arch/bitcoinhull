@@ -1,19 +1,19 @@
-/* Bitcoin Hull — baked data: Luke Dashjr node-count history (task 12).
-   FALLBACK ONLY: main.js seeds the store from this at boot, and the live
-   poll of luke.dashjr.org OVERWRITES it the moment his server serves a
-   single valid CORS header (today it sends Access-Control-Allow-Origin
-   twice, which every browser rejects — verified 2026-07-17, and no
-   alternative source with history exists: bitnodes.io is dead, Blockchair
-   counts only its own ~300 crawler connections, KIT DSN has no CORS).
+/* Bitcoin Hull — baked data: Luke Dashjr node-count history (task 12;
+   role reduced in task 28). BOOT FLOOR ONLY: main.js seeds the store
+   from this at boot, and the nodesMirror poll (bitcoin-data nightly
+   GitHub mirror of the same file, CORS-clean) overwrites it within
+   seconds — a visitor sees baked data only while offline. Luke's own
+   origin still sends a doubled ACAO header (browser-dead; his direct
+   poll stays armed and wins if he ever fixes it).
    Rows are [unixTs, listening, total] with total = col2+col3 of his file
    (his own chart sums them — col3 alone is the non-listening estimate).
-   Refresh on the monthly bake sitting: scripts/bake-nodes.sh */
+   Refresh on the periodic bake sitting: scripts/bake-nodes.sh */
 (function () {
   'use strict';
   var HULL = window.HULL = window.HULL || {};
   HULL.baked = HULL.baked || {};
   HULL.baked.nodes = {
-  asOf: '2026-07-17',
+  asOf: '2026-07-20',
   rows: [
   [1493334360,7449,44807],[1493337605,7449,44807],[1493424005,7537,45618],[1493510405,7643,45391],[1493596805,7655,44596],[1493683203,7663,45178],
   [1493769604,7631,46136],[1493856005,7635,45924],[1493942403,7647,46167],[1494028804,7738,47494],[1494115205,7776,46337],[1494201605,7846,46982],
@@ -533,6 +533,7 @@
   [1782345602,5281,92349],[1782432003,5278,92569],[1782518403,5243,92909],[1782604806,5145,92349],[1782691207,5102,92289],[1782777603,5067,93377],
   [1782864003,5160,92991],[1782950405,5247,93530],[1783036804,5354,94332],[1783123203,5371,95406],[1783209607,5351,95232],[1783296005,5249,95553],
   [1783382403,5199,95242],[1783468806,5170,95893],[1783555207,5053,96384],[1783641606,5014,97137],[1783728006,4974,97189],[1783814409,4969,97974],
-  [1783900804,5034,99376],[1783987203,5032,98351],[1784073605,5111,99628],[1784160004,5051,99631],[1784246406,5120,99854]]
+  [1783900804,5034,99376],[1783987203,5032,98351],[1784073605,5111,99628],[1784160004,5051,99631],[1784246406,5120,99854],[1784332804,5114,100898],
+  [1784419208,5152,102414],[1784505603,5021,102348]]
   };
 })();

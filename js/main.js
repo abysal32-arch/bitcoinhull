@@ -41,6 +41,20 @@
     return { ts: last.ts, listening: last.listening, total: last.total, rows: rows };
   }
 
+  /* task 29: both LN feeds ride third-party indexers that already serve
+     junk-shaped 200s in the wild (mempool.space's interval routes return
+     []) — a payload without a dated `latest` snapshot must count as a
+     FAILED attempt (backoff, no store write), never refresh the key's age
+     with unrenderable data. */
+  function parseLn(text) {
+    var j = JSON.parse(text);
+    if (!j || !j.latest || typeof j.latest.added !== 'string' ||
+        !isFinite(Date.parse(j.latest.added))) {
+      throw new Error('unexpected lightning payload');
+    }
+    return j;
+  }
+
   /* task 28: TWO polls feed the 'nodes' store key — Luke's own origin
      (browser-dead today: doubled ACAO header; kept armed to self-heal) and
      the bitcoin-data nightly GitHub mirror of the same file, which lags the
@@ -109,7 +123,8 @@
        chip. Same-origin mempool.space first, then blockchain.info charts
        (CORS verified: exactly one ACAO header with cors=true). */
     ['lightning',     '/api/v1/lightning/statistics/latest',
-                                                       'lightning',   21600000, null, { aux: true }],
+                                                       'lightning',   21600000, null,
+                                                       { parse: parseLn, aux: true, backoffCapMs: 3600000 }],
     /* task 28: mempool.space's LN statistics pipeline has been stalled since
        mid-June 2026 (its snapshot even regressed 06-18 -> 06-16); Emzy's
        public instance runs the identical API with a healthy DAILY indexer
@@ -119,7 +134,7 @@
        its death silently falls back to the mempool.space snapshot. */
     ['lightningFresh','https://mempool.emzy.de/api/v1/lightning/statistics/latest',
                                                        'lightningFresh', 21600000, null,
-                                                       { aux: true, backoffCapMs: 3600000 }],
+                                                       { parse: parseLn, aux: true, backoffCapMs: 3600000 }],
     ['diffHistory',   '/api/v1/mining/difficulty-adjustments',
                                                        'diffHistory', 21600000, null, { aux: true }],
     ['hashrate3y',    '/api/v1/mining/hashrate/3y',
