@@ -74,9 +74,21 @@ for f in "emzy https://mempool.emzy.de/api/v1/lightning/statistics/latest 3" \
   fi
 done
 
+# mempool.space's stalled backend is SPLIT-BRAINED — different edges serve
+# different stale dates (06-18 / 06-16 / 05-22 all observed 07-19..20), so
+# the raw date would flap the state daily. Quantized: only a genuine
+# recovery (snapshot within 7 d) flips this key.
 space=$(added_date 'https://mempool.space/api/v1/lightning/statistics/latest')
-echo "space_added=${space:-ERR}" >> "$NEW" # stalled ~2026-06-16; any movement = recovery (or more churn) on the fallback
-notes+="- mempool.space LN snapshot: **${space:-ERR}** (stalled mid-June; movement = fallback recovering)\n"
+if [ -n "$space" ]; then
+  sd=$(age_days "$space")
+  if [ "$sd" = "ERR" ]; then echo "space=ERROR" >> "$NEW"
+  elif [ "$sd" -le 7 ]; then echo "space=RECOVERED" >> "$NEW"
+  else echo "space=STALLED" >> "$NEW"; fi
+  notes+="- mempool.space LN snapshot: **$space** (quantized; edges disagree while stalled — only a real recovery notifies)\n"
+else
+  echo "space=ERROR" >> "$NEW"
+  notes+="- mempool.space LN snapshot: **UNFETCHABLE/unparseable**\n"
+fi
 
 bcv=$(acao_count 'https://bitcoinvisuals.com/static/data/data_daily.csv' -r 0-0)
 echo "bitcoinvisuals_acao=${bcv:-ERR}" >> "$NEW"

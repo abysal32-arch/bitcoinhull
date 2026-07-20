@@ -59,6 +59,19 @@ the Hull is RETIRED (bitcoinburned's BigQuery sitting is unaffected).
 Verified: CI dispatch run green end-to-end (bake → sane → freshly-baked
 file unchanged → no-op commit path).
 
+## First-run catch + noise hardening (same sitting)
+
+The watchdog's FIRST CI run went red on a real event: the runner received
+`added: 2026-05-22` from mempool.space while a local probe minutes apart
+received `2026-06-16` — their stalled backend is SPLIT-BRAINED, serving
+different stale snapshots per edge (06-18 / 06-16 / 05-22 all observed
+across 07-19..20). Two actions: (1) the raw-date state key would flap red
+daily while their edges disagree, so `space` is quantized to
+STALLED/RECOVERED/ERROR — only a genuine recovery (snapshot ≤ 7 d)
+notifies; re-verified locally (no-change exit 0) + green CI dispatch.
+(2) The split-brain observation was added to the mempool issue draft —
+it materially strengthens the report.
+
 ## Costs / trust (named)
 
 - +1 request per visitor per 6 h (guide) on the Lightning panel.

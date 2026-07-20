@@ -16,6 +16,11 @@ updated since **mid-June 2026**, and the served snapshot has gone BACKWARD:
 - 2026-07-20: the same endpoint returns
   `{"latest":{"id":107927,"added":"2026-06-16T00:00:00.000Z", ...}}` — a
   HIGHER id carrying an OLDER snapshot date than the day before.
+- Also 2026-07-20, within the same hour: a GitHub Actions runner received
+  `added: 2026-05-22` from the identical URL while a residential client
+  received `added: 2026-06-16` — different edges/backends appear to serve
+  DIFFERENT stale snapshots (06-18, 06-16, and 05-22 all observed across
+  2026-07-19..20).
 - The interval endpoints (`.../statistics/24h`, `/3d`, `/1w`) return `[]`.
 - The https://mempool.space/lightning page renders the same frozen figures,
   so this is the instance's data pipeline rather than a single API route.
